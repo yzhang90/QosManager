@@ -4,16 +4,15 @@ sudo apt-get install python-pip
 sudo apt-get install python-dev
 
 Step 1:
-sudo apt-get install python-eventlet
-sudo apt-get install python-routes
-sudo apt-get install python-webob
-sudo apt-get install python-paramiko
-
-Step 2:
 sudo apt-get install git
 git clone https://github.com/osrg/ryu.git
 cd ryu; python ./setup.py install
 
-Step 3:
+Step 2:
 sudo pip install six --upgrade
 sudo pip install oslo.config
+sudo pip install eventlet
+sudo pip install routes
+sudo pip install webob
+sudo pip install paramiko
+sudo pip install msgpack-python
