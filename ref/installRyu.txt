@@ -1,0 +1,19 @@
+Step 0:
+sudo apt-get update
+sudo apt-get install python-pip
+sudo apt-get install python-dev
+
+Step 1:
+sudo apt-get install python-eventlet
+sudo apt-get install python-routes
+sudo apt-get install python-webob
+sudo apt-get install python-paramiko
+
+Step 2:
+sudo apt-get install git
+git clone https://github.com/osrg/ryu.git
+cd ryu; python ./setup.py install
+
+Step 3:
+sudo pip install six --upgrade
+sudo pip install oslo.config
