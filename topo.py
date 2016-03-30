@@ -2,26 +2,39 @@
 
 from mininet.cli  import CLI
 from mininet.net  import Mininet
-from mininet.node import RemoteController
+from mininet.node import RemoteController, OVSHtbSwitch
 from mininet.link import TCLink 
-from mininet.term import makeTerm
 
 if '__main__' == __name__:
-    net = Mininet(controller=RemoteController, link=TCLink)
+    net = Mininet(switch=OVSHtbSwitch, controller=RemoteController, link=TCLink)
 
     c0 = net.addController('c0', port=6633)
 
-    s1 = net.addSwitch('s1')
+    s1 = net.addSwitch('s1', protocols='OpenFlow13')
+    s2 = net.addSwitch('s2', protocols='OpenFlow13')
 
-    h1 = net.addHost('h1')
-    h2 = net.addHost('h2')
+    hs1 = net.addHost('hs1')
+    hs2 = net.addHost('hs2')
+    hs3 = net.addHost('hs3')
 
-    net.addLink(s1, h1, bw=500)
-    net.addLink(s1, h2)
+    hc1 = net.addHost('hc1')
+    hc2 = net.addHost('hc2')
+    hc3 = net.addHost('hc3')
+
+    net.addLink(hs1, s1)
+    net.addLink(hs2, s1)
+    net.addLink(hs3, s1)
+
+    net.addLink(s1, s2, bw=100)
+
+    net.addLink(hc1, s2)
+    net.addLink(hc2, s2)
+    net.addLink(hc3, s2)
 
     net.build()
     c0.start()
     s1.start([c0])
+    s2.start([c0])
 
     #net.startTerms()
 

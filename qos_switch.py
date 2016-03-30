@@ -46,18 +46,7 @@ class QosSwitch(app_manager.RyuApp):
         else:
             mod = parser.OFPFlowMod(datapath=datapath, priority=priority,
                                     match=match, instructions=inst)
-        #datapath.send_msg(mod)
-
-    def add_meter(self, datapath, rate, burst_size):
-        ofproto = datapath.ofproto
-        parser = datapath.ofproto_parser
-
-        bands = []
-        bands.append(parser.OFPMeterBandDrop(rate, burst_size))
-        meter_mod = parser.OFPMeterMod(datapath=datapath, command=ofproto.OFPMC_ADD,
-                                       flags=ofproto.OFPMF_KBPS, meter_id=1, bands=bands)
-        self.logger.info("Meter 1 added!")
-        datapath.send_msg(meter_mod)
+        datapath.send_msg(mod)
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
