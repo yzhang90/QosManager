@@ -25,7 +25,7 @@ if '__main__' == __name__:
     net.addLink(hs2, s1)
     net.addLink(hs3, s1)
 
-    net.addLink(s1, s2, bw=100)
+    net.addLink(s1, s2, bw=10)
 
     net.addLink(hc1, s2)
     net.addLink(hc2, s2)
