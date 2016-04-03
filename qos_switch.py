@@ -99,6 +99,11 @@ class QosSwitch(app_manager.RyuApp):
             datapath.send_msg(out)
 
 
+    @set_ev_cls(ofp_event.EventOFPFlowRemoved, MAIN_DISPATCHER)
+    def _flow_removed_handler(self, ev):
+        
+
+
     def add_flow(self, datapath, match, actions, **kwargs):
         ofproto      = datapath.ofproto
         parser       = datapath.ofproto_parser

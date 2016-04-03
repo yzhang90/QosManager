@@ -3,6 +3,7 @@ This module provides methods for Qos control.
 """
 
 import logging
+import yaml
 
 
 class QosControl(object):

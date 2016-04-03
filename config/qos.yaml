@@ -1,0 +1,13 @@
+Video:
+    minimum: 1.5M
+    recommended: 7M
+    priority: 10
+VoIP:
+    minimum: 100K
+    recommended: 300K
+    priority: 2
+Game:
+    minimum: 512K
+    recommended: 1M
+    priority: 1
+    

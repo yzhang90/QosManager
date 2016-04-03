@@ -1,11 +1,23 @@
-#!/usr/bin/env python
+#/usr/bin/env python
+
+import os
 
 from mininet.cli  import CLI
 from mininet.net  import Mininet
 from mininet.node import RemoteController, OVSHtbSwitch
 from mininet.link import TCLink 
 
-if '__main__' == __name__:
+if __name__  == '__main__':
+    
+    #Clean qos and queues
+    cmd = "sudo ovs-vsctl show"
+    os.popen(cmd).read()
+    cmd = "sudo ovs-vsctl --all destroy qos"
+    os.popen(cmd).read()
+    cmd = "sudo ovs-vsctl --all destroy queue"
+    os.popen(cmd).read()
+    
+
     net = Mininet(switch=OVSHtbSwitch, controller=RemoteController, link=TCLink)
 
     c0 = net.addController('c0', port=6633)
@@ -25,7 +37,7 @@ if '__main__' == __name__:
     net.addLink(hs2, s1)
     net.addLink(hs3, s1)
 
-    net.addLink(s1, s2, bw=10)
+    net.addLink(s1, s2, bw=15)
 
     net.addLink(hc1, s2)
     net.addLink(hc2, s2)
