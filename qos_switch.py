@@ -11,6 +11,7 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from ryu.lib.packet import ether_types
 
+import config
 import forwarding
 import control
 
@@ -22,8 +23,9 @@ class QosSwitch(app_manager.RyuApp):
         self.idle_timeout = 0
         
         # Initialize modules
+        self.config     = config.QosConfig()
         self.forwarding = forwarding.QosForwarding()
-        self.control    = control.QosControl()
+        self.control    = control.QosControl(self.config)
 
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
@@ -75,7 +77,7 @@ class QosSwitch(app_manager.RyuApp):
         # install a flow to avoid packet_in next time
         if out_port != ofproto.OFPP_FLOOD:
             match = parser.OFPMatch(in_port=in_port, eth_dst=eth_dst)
-            actions = self.control.computeQosActions(datapath, in_port, out_port)
+            actions = self.control.compute_QosActions(datapath, in_port, out_port)
             # verify if we have a valid buffer_id, if yes avoid to send both
             # flow_mod & packet_out
             if msg.buffer_id != ofproto.OFP_NO_BUFFER:
@@ -89,7 +91,7 @@ class QosSwitch(app_manager.RyuApp):
                                           in_port=in_port, actions=actions, data=data)
                 datapath.send_msg(out)
         else:
-            actions = self.control.computeNormalActions(datapath, out_port)
+            actions = self.control.compute_normalActions(datapath, out_port)
             data = None
             if msg.buffer_id == ofproto.OFP_NO_BUFFER:
                 data = msg.data
@@ -101,7 +103,7 @@ class QosSwitch(app_manager.RyuApp):
 
     @set_ev_cls(ofp_event.EventOFPFlowRemoved, MAIN_DISPATCHER)
     def _flow_removed_handler(self, ev):
-        
+        print "hello"        
 
 
     def add_flow(self, datapath, match, actions, **kwargs):

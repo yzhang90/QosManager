@@ -1,0 +1,13 @@
+bandwidth: 15Mbps
+queue:
+    1: 100Kbps
+    2: 100Kbps
+    3: 300Kbps
+    4: 300Kbps
+    5: 512Kbps
+    6: 512Kbps
+    7: 1Mbps
+    8: 1Mbps
+    9: 1.5Mbps
+    10: 1.5Mbps
+    11: 7Mbps
