@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os
+import subprocess
 
 from mininet.cli  import CLI
 from mininet.net  import Mininet
@@ -11,11 +11,11 @@ if __name__  == '__main__':
     
     #Clean qos and queues
     cmd = "sudo ovs-vsctl show"
-    os.popen(cmd).read()
+    subprocess.call(cmd, shell=True)
     cmd = "sudo ovs-vsctl --all destroy qos"
-    os.popen(cmd).read()
+    subprocess.call(cmd, shell=True)
     cmd = "sudo ovs-vsctl --all destroy queue"
-    os.popen(cmd).read()
+    subprocess.call(cmd, shell=True)
     
 
     net = Mininet(switch=OVSHtbSwitch, controller=RemoteController, link=TCLink)

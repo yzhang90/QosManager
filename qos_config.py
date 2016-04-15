@@ -20,6 +20,14 @@ class QosConfig(object):
         queue_yaml = os.path.join(config_directory, "queue.yaml")
 
         try:
+            with open(class_yaml, 'r') as f:
+                self.traffic_config = yaml.load(f)
+        except (IOError, OSError) :
+            LOG.error("Failed to open class.yaml")
+            sys.exit("Exiting config module")
+
+
+        try:
             with open(qos_yaml, 'r') as f:
                 self.qos_config = yaml.load(f)
         except (IOError, OSError) :
@@ -32,12 +40,4 @@ class QosConfig(object):
         except (IOError, OSError) :
             LOG.error("Failed to open queue.yaml")
             sys.exit("Exiting config module")
-        
-        #unit_parser = re.compile(r"(\d+\.?\d*)\s*(\w+)")
-        #match = unit_parser.match(self.queue_config['queue'][9])
-        #value = match.group(1)
-        #unit = match.group(2)
 
-
-if __name__ == "__main__":
-    config = QosConfig()

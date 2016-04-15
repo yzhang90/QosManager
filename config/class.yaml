@@ -1,0 +1,9 @@
+Video:
+    - ipv4: 
+        src: 10.0.0.1
+      protocol: udp
+
+VoIP:
+    - ipv4:
+        src: 10.0.0.2
+      protocol: udp

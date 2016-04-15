@@ -1,5 +1,5 @@
 bandwidth: 15Mbps
-queue:
+queues:
     1: 100Kbps
     2: 100Kbps
     3: 100Kbps
@@ -16,4 +16,4 @@ queue:
     14: 1.5Mbps
     15: 1.5Mbps
     16: 5Mbps
-    17: 5Mpbs
+    17: 5Mbps

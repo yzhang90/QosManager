@@ -16,14 +16,16 @@ class QosForwarding(object):
         self.mac_to_port = {}
         self.propagate = False
 
-    def l2_switch(self, datapath, eth, in_port):
+    def l2_switch(self, datapath, pkt, in_port):
         dpid = datapath.id
         ofproto = datapath.ofproto
-        eth_src = eth.src
-        eth_dst = eth.dst
+        pkt_eth = pkt.get_protocol(ethernet.ethernet)
+        eth_src = pkt_eth.src
+        eth_dst = pkt_eth.dst
+        eth_type = pkt_eth.ethertype
 
-        LOG.info("PacketIn dpid: %s, src: %s, dst: %s, in_port: %s",
-                  dpid, eth_src, eth_dst, in_port)
+        LOG.info("PacketIn dpid: %s, src: %s, dst: %s, type: %s, in_port: %s",
+                  dpid, eth_src, eth_dst, eth_type, in_port)
 
         self.mac_to_port.setdefault(dpid, {})
         # learn a mac address to avoid FLOOD next time.

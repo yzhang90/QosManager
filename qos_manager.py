@@ -2,6 +2,8 @@
 This is the main module of qos_switch
 """
 
+import time
+
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
@@ -11,21 +13,23 @@ from ryu.lib.packet import packet
 from ryu.lib.packet import ethernet
 from ryu.lib.packet import ether_types
 
-import config
-import forwarding
-import control
+import qos_config
+import qos_traffic
+import qos_forwarding
+import qos_control
 
-class QosSwitch(app_manager.RyuApp):
+class QosManager(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
     
     def __init__(self, *args, **kwargs):
-        super(QosSwitch, self).__init__(*args, **kwargs)
-        self.idle_timeout = 0
+        super(QosManager, self).__init__(*args, **kwargs)
+        self.idle_timeout = 20
         
         # Initialize modules
-        self.config     = config.QosConfig()
-        self.forwarding = forwarding.QosForwarding()
-        self.control    = control.QosControl(self.config)
+        self.config     = qos_config.QosConfig()
+        self.tc         = qos_traffic.QosTraffic(self.config)
+        self.forwarding = qos_forwarding.QosForwarding()
+        self.control    = qos_control.QosControl(self.config)
 
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
@@ -62,27 +66,38 @@ class QosSwitch(app_manager.RyuApp):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
         pkt = packet.Packet(msg.data)
-        eth = pkt.get_protocol(ethernet.ethernet)
-        eth_src = eth.src
-        eth_dst = eth.dst
+        pkt_eth = pkt.get_protocol(ethernet.ethernet)
+        eth_type = pkt_eth.ethertype
+        eth_src = pkt_eth.src
+        eth_dst = pkt_eth.dst
         in_port = msg.match['in_port']
         
 
-        if eth.ethertype == ether_types.ETH_TYPE_LLDP:
+        if pkt_eth.ethertype == ether_types.ETH_TYPE_LLDP:
             # ignore lldp packet
             return
-        
-        out_port = self.forwarding.l2_switch(datapath, eth, in_port)
+
+        result = None
+        # Only do the classificaion on IP packets
+        if pkt_eth.ethertype == ether_types.ETH_TYPE_IP:
+            result = self.tc.classify(pkt)
+
+        out_port = self.forwarding.l2_switch(datapath, pkt, in_port)
 
         # install a flow to avoid packet_in next time
         if out_port != ofproto.OFPP_FLOOD:
-            match = parser.OFPMatch(in_port=in_port, eth_dst=eth_dst)
-            actions = self.control.compute_QosActions(datapath, in_port, out_port)
+            if result:
+                match = parser.OFPMatch(**result['match'])
+            else:
+                match = parser.OFPMatch(eth_src=eth_src, eth_dst=eth_dst, eth_type=eth_type)
+            flow_id = self.control.add_flow(result)
+            actions = self.control.get_Actions(datapath, flow_id, in_port, out_port)
             # verify if we have a valid buffer_id, if yes avoid to send both
             # flow_mod & packet_out
             if msg.buffer_id != ofproto.OFP_NO_BUFFER:
                 self.add_flow(datapath, match, actions, 
                               priority=1, buffer_id=msg.buffer_id, idle_timeout=self.idle_timeout)
+                return
             else:
                 self.add_flow(datapath, match, actions,
                               priority=1, idle_timeout=self.idle_timeout)
@@ -91,7 +106,7 @@ class QosSwitch(app_manager.RyuApp):
                                           in_port=in_port, actions=actions, data=data)
                 datapath.send_msg(out)
         else:
-            actions = self.control.compute_normalActions(datapath, out_port)
+            actions = self.control.get_Actions(datapath, None, in_port, out_port)
             data = None
             if msg.buffer_id == ofproto.OFP_NO_BUFFER:
                 data = msg.data
@@ -103,7 +118,18 @@ class QosSwitch(app_manager.RyuApp):
 
     @set_ev_cls(ofp_event.EventOFPFlowRemoved, MAIN_DISPATCHER)
     def _flow_removed_handler(self, ev):
-        print "hello"        
+        # Extract parameters
+        msg = ev.msg
+        datapath = msg.datapath
+        dpid = datapath.id
+        pkt = packet.Packet(msg.data)
+        pkt_eth = pkt.get_protocol(ethernet.ethernet)
+        eth_type = pkt_eth.ethertype
+
+        if pkt_eth.ethertype == ether_types.ETH_TYPE_IP:
+            flow_id = self.tc.remove_flow(pkt)
+
+
 
 
     def add_flow(self, datapath, match, actions, **kwargs):
