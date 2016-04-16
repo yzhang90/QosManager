@@ -3,26 +3,11 @@ This module provides methods for Qos control.
 """
 
 import logging
-import re
 
 from ryu.lib.packet import ether_types
 from ryu.lib.packet import in_proto as inet
 
-def main_unit(v)  : return int(v)
-def kbps2bps(kbps): return int(float(kbps)*1000)
-def mbps2bps(mbps): return int(float(mbps)*1000000)
-
-normalize_unit = {
-    'bps' : main_unit,
-    'Kbps': kbps2bps,
-    'Mbps': mbps2bps
-    }
-
-def get_normalized_value(str):
-    unit_parser = re.compile(r"(\d+\.?\d*)\s*(\w+)")
-    match = unit_parser.match(str)
-    unit = match.group(2)
-    return normalize_unit[unit](match.group(1))
+import utils
 
 class QosControl(object):
     
@@ -30,12 +15,14 @@ class QosControl(object):
         super(QosControl, self).__init__()
         queue_config = config.queue_config
         self.qos_config = config.qos_config
-        self.bandwidth = get_normalized_value(queue_config['bandwidth'])
+        self.bandwidth = utils.get_normalized_value(queue_config['bandwidth'])
         self.queues = {}
         for k, v in queue_config['queues'].iteritems():
-            self.queues[k] = {'rate': get_normalized_value(v),'used': 0}
+            self.queues[k] = {'rate': utils.get_normalized_value(v),'used': 0}
         self.flows = {}
-    
+   
+    # Add a classified flow into the flow dictionary.
+    # Return the flowid of the classified flow, otherwise return None
     def add_flow(self, tc):
         if tc is not None:
             match = tc['match']
@@ -47,26 +34,33 @@ class QosControl(object):
                 if flow_id not in self.flows:
                     self.flows[flow_id] = {'traffic_type': traffic_type}
                 return flow_id
-
         return None
 
+    def remove_flow(self, flow_id):
+        print self.flows
+        self.flows.pop(flow_id, None)
 
-    def get_Actions(self, datapath, flowid, in_port, out_port):
+
+    def get_Actions(self, datapath, flow_id, in_port, out_port):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
 
-        #Qos Actions
-        if flowid is not None:
+        # Qos Actions
+        if flow_id is not None:
             if datapath.id == 1 and out_port == 4 and in_port == 1:
                 out_queue = 1
                 actions = [parser.OFPActionSetQueue(out_queue),
                             parser.OFPActionOutput(out_port)]
             else:
                 actions = [parser.OFPActionOutput(out_port)]
-        #Normal Actions
+        # Normal Actions
         else:
-            out_queue = 0
-            actions = [parser.OFPActionSetQueue(out_queue),
-                       parser.OFPActionOutput(out_port)]
+            # Only do traffic shaping at switch 1
+            if datapath.id == 1: 
+                out_queue = 0
+                actions = [parser.OFPActionSetQueue(out_queue),
+                           parser.OFPActionOutput(out_port)]
+            else:
+                actions = [parser.OFPActionOutput(out_port)]
 
         return actions

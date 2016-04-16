@@ -17,13 +17,14 @@ import qos_config
 import qos_traffic
 import qos_forwarding
 import qos_control
+import utils
 
 class QosManager(app_manager.RyuApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
     
     def __init__(self, *args, **kwargs):
         super(QosManager, self).__init__(*args, **kwargs)
-        self.idle_timeout = 20
+        self.idle_timeout = 5
         
         # Initialize modules
         self.config     = qos_config.QosConfig()
@@ -71,16 +72,23 @@ class QosManager(app_manager.RyuApp):
         eth_src = pkt_eth.src
         eth_dst = pkt_eth.dst
         in_port = msg.match['in_port']
+
+        is_ip_flow = False
         
 
-        if pkt_eth.ethertype == ether_types.ETH_TYPE_LLDP:
+        if eth_type == ether_types.ETH_TYPE_LLDP:
             # ignore lldp packet
             return
 
         result = None
         # Only do the classificaion on IP packets
-        if pkt_eth.ethertype == ether_types.ETH_TYPE_IP:
+        if eth_type == ether_types.ETH_TYPE_IP:
+            is_ip_flow = True
             result = self.tc.classify(pkt)
+        
+        if result is not None:
+            print(result['flow_id'])
+
 
         out_port = self.forwarding.l2_switch(datapath, pkt, in_port)
 
@@ -95,12 +103,20 @@ class QosManager(app_manager.RyuApp):
             # verify if we have a valid buffer_id, if yes avoid to send both
             # flow_mod & packet_out
             if msg.buffer_id != ofproto.OFP_NO_BUFFER:
-                self.add_flow(datapath, match, actions, 
-                              priority=1, buffer_id=msg.buffer_id, idle_timeout=self.idle_timeout)
+                # only add idle_timeout to ip flows
+                if is_ip_flow:
+                    self.add_flow(datapath, match, actions, 
+                                  priority=1, buffer_id=msg.buffer_id, idle_timeout=self.idle_timeout)
+                else:
+                    self.add_flow(datapath, match, actions, priority=1, buffer_id=msg.buffer_id)
                 return
             else:
-                self.add_flow(datapath, match, actions,
-                              priority=1, idle_timeout=self.idle_timeout)
+                # only add idle_timeout to ip flows
+                if is_ip_flow:
+                    self.add_flow(datapath, match, actions, priority=1, idle_timeout=self.idle_timeout)
+                else:
+                    self.add_flow(datapath, match, actions, priority=1)
+
                 data = msg.data
                 out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
                                           in_port=in_port, actions=actions, data=data)
@@ -120,33 +136,29 @@ class QosManager(app_manager.RyuApp):
     def _flow_removed_handler(self, ev):
         # Extract parameters
         msg = ev.msg
-        datapath = msg.datapath
-        dpid = datapath.id
-        pkt = packet.Packet(msg.data)
-        pkt_eth = pkt.get_protocol(ethernet.ethernet)
-        eth_type = pkt_eth.ethertype
+        match = msg.match
+        flow_id = utils.compute_flow_id2(match)
+        self.tc.remove_flow(flow_id)
+        self.control.remove_flow(flow_id)
 
-        if pkt_eth.ethertype == ether_types.ETH_TYPE_IP:
-            flow_id = self.tc.remove_flow(pkt)
-
-
-
-
+        
     def add_flow(self, datapath, match, actions, **kwargs):
         ofproto      = datapath.ofproto
         parser       = datapath.ofproto_parser
         priority     = kwargs.setdefault('priority', 0)
         buffer_id    = kwargs.setdefault('buffer_id', None)
         idle_timeout = kwargs.setdefault('idle_timeout', 0)
+        flags        = kwargs.setdefault('flags', ofproto.OFPFF_SEND_FLOW_REM)
 
         inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS,
                                              actions)]
         if buffer_id:
             mod = parser.OFPFlowMod(datapath=datapath, buffer_id=buffer_id,
                                     priority=priority, match=match,
-                                    instructions=inst, idle_timeout=idle_timeout)
+                                    instructions=inst, idle_timeout=idle_timeout, flags=flags)
         else:
             mod = parser.OFPFlowMod(datapath=datapath, priority=priority,
-                                    match=match, instructions=inst, idle_timeout=idle_timeout)
+                                    match=match, instructions=inst, 
+                                    idle_timeout=idle_timeout, flags=flags)
         datapath.send_msg(mod)
 
