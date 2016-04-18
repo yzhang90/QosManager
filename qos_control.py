@@ -74,11 +74,11 @@ class QosControl(object):
 
     # Add a classified flow into the flow dictionary.
     # Return the flowid of the classified flow, otherwise return None
-    def add_flow(self, tc):
-        if tc is not None:
-            match = tc['match']
-            traffic_type = tc['traffic_type']
-            flow_id = tc['flow_id']
+    def add_flow(self, cflow):
+        if cflow is not None:
+            match = cflow['match']
+            traffic_type = cflow['traffic_type']
+            flow_id = cflow['flow_id']
             if flow_id is None:
                 return None
             if traffic_type is not None:

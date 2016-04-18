@@ -93,3 +93,25 @@ def compute_flow_id2(match_dict):
         return hash(ip_tuple)
     else:
         return None
+
+
+def add_flow_entry(datapath, match, actions, **kwargs):
+    ofproto      = datapath.ofproto
+    parser       = datapath.ofproto_parser
+    priority     = kwargs.setdefault('priority', 0)
+    buffer_id    = kwargs.setdefault('buffer_id', None)
+    idle_timeout = kwargs.setdefault('idle_timeout', 0)
+    flags        = kwargs.setdefault('flags', ofproto.OFPFF_SEND_FLOW_REM)
+
+    inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS,
+                                         actions)]
+    if buffer_id:
+        mod = parser.OFPFlowMod(datapath=datapath, buffer_id=buffer_id,
+                                priority=priority, match=match,
+                                instructions=inst, idle_timeout=idle_timeout, flags=flags)
+    else:
+        mod = parser.OFPFlowMod(datapath=datapath, priority=priority,
+                                match=match, instructions=inst,
+                                idle_timeout=idle_timeout, flags=flags)
+    datapath.send_msg(mod)
+
