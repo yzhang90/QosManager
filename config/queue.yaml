@@ -1,4 +1,4 @@
-bandwidth: 15Mbps
+bandwidth: 8Mbps
 queues:
     1: 100Kbps
     2: 100Kbps

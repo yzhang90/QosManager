@@ -7,3 +7,8 @@ VoIP:
     - ipv4:
         src: 10.0.0.2
       protocol: udp
+
+Game:
+    - ipv4:
+        src: 10.0.0.3
+      protocol: udp

@@ -86,9 +86,6 @@ class QosManager(app_manager.RyuApp):
             is_ip_flow = True
             result = self.tc.classify(pkt)
         
-        if result is not None:
-            print(result['flow_id'])
-
 
         out_port = self.forwarding.l2_switch(datapath, pkt, in_port)
 
