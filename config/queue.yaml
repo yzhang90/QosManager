@@ -1,19 +1,8 @@
 bandwidth: 8Mbps
 queues:
     1: 100Kbps
-    2: 100Kbps
-    3: 100Kbps
-    4: 300Kbps
-    5: 300Kbps
-    6: 300Kbps
-    7: 512Kbps
-    8: 512Kbps
-    9: 512Kbps
-    10: 1Mbps
-    11: 1Mbps
-    12: 1Mbps
-    13: 1.5Mbps
-    14: 1.5Mbps
-    15: 1.5Mbps
-    16: 5Mbps
-    17: 5Mbps
+    2: 300Kbps
+    3: 512Kbps
+    4: 1Mbps
+    5: 1.5Mbps
+    6: 5Mbps

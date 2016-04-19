@@ -85,27 +85,24 @@ class QosControl(object):
         parser = datapath.ofproto_parser
   
         for k, v in self.flows.iteritems():
+            changed = False
             if k in flow_assign:
                 if flow_assign[k] != v['queue']:
                     self.flows[k]['queue'] = flow_assign[k]
-                    if k != flow_id:
-                        out_queue = self.flows[k]['queue']
-                        out_port = self.flows[k]['out_port']
-                        actions = [parser.OFPActionSetQueue(out_queue),
-                                   parser.OFPActionOutput(out_port)]
-                        match = parser.OFPMatch(**self.flows[k]['match'])
-                        print "match:%s"%match
-                        print "actions:%s"%actions
-                        utils.mod_flow_entry(datapath, match, actions)
+                    changed = True
             else:
                 if v['queue'] != 0:
                     self.flows[k]['queue'] = 0
-                    out_queue = self.flows[k]['queue']
-                    out_port = self.flows[k]['out_port']
-                    actions = [parser.OFPActionSetQueue(out_queue),
-                               parser.OFPActionOutput(out_port)]
-                    match = parser.OFPMatch(**self.flows[k]['match'])
-                    utils.mod_flow_entry(datapath, match, actions)
+                    changed = True
+
+            if changed and k != flow_id:
+                out_queue = self.flows[k]['queue']
+                out_port = self.flows[k]['out_port']
+                actions = [parser.OFPActionSetQueue(out_queue),
+                           parser.OFPActionOutput(out_port)]
+                match = parser.OFPMatch(**self.flows[k]['match'])
+                utils.mod_flow_entry(datapath, match, actions)
+
 
 
     # Add a classified flow into the flow dictionary.
