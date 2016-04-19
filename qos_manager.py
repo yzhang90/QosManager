@@ -24,7 +24,7 @@ class QosManager(app_manager.RyuApp):
     
     def __init__(self, *args, **kwargs):
         super(QosManager, self).__init__(*args, **kwargs)
-        self.idle_timeout = 5
+        self.idle_timeout = 10
         
         # Initialize modules
         self.config     = qos_config.QosConfig()
@@ -74,7 +74,6 @@ class QosManager(app_manager.RyuApp):
         in_port = msg.match['in_port']
 
         is_ip_flow = False
-        
 
         if eth_type == ether_types.ETH_TYPE_LLDP:
             # ignore lldp packet
@@ -85,7 +84,6 @@ class QosManager(app_manager.RyuApp):
         if eth_type == ether_types.ETH_TYPE_IP:
             is_ip_flow = True
             result = self.tc.classify(pkt)
-        
 
         out_port = self.forwarding.l2_switch(datapath, pkt, in_port)
 
@@ -95,22 +93,24 @@ class QosManager(app_manager.RyuApp):
                 match = parser.OFPMatch(**result['match'])
             else:
                 match = parser.OFPMatch(eth_src=eth_src, eth_dst=eth_dst, eth_type=eth_type)
-            flow_id = self.control.add_flow(result)
+            flow_id = self.control.add_flow(datapath, result, out_port)
             actions = self.control.get_Actions(datapath, flow_id, in_port, out_port)
             # verify if we have a valid buffer_id, if yes avoid to send both
             # flow_mod & packet_out
             if msg.buffer_id != ofproto.OFP_NO_BUFFER:
                 # only add idle_timeout to ip flows
                 if is_ip_flow:
-                    utils.add_flow_entry(datapath, match, actions, 
-                                         priority=1, buffer_id=msg.buffer_id, idle_timeout=self.idle_timeout)
+                    utils.add_flow_entry(datapath, match, actions, priority=1,
+                                         buffer_id=msg.buffer_id, idle_timeout=self.idle_timeout)
                 else:
-                    utils.add_flow_entry(datapath, match, actions, priority=1, buffer_id=msg.buffer_id)
+                    utils.add_flow_entry(datapath, match, actions,
+                                         priority=1, buffer_id=msg.buffer_id)
                 return
             else:
                 # only add idle_timeout to ip flows
                 if is_ip_flow:
-                    utils.add_flow_entry(datapath, match, actions, priority=1, idle_timeout=self.idle_timeout)
+                    utils.add_flow_entry(datapath, match, actions,
+                                         priority=1, idle_timeout=self.idle_timeout)
                 else:
                     utils.add_flow_entry(datapath, match, actions, priority=1)
 
@@ -133,8 +133,9 @@ class QosManager(app_manager.RyuApp):
     def _flow_removed_handler(self, ev):
         # Extract parameters
         msg = ev.msg
+        datapath = msg.datapath
         match = msg.match
         flow_id = utils.compute_flow_id2(match)
         self.tc.remove_flow(flow_id)
-        self.control.remove_flow(flow_id)
+        self.control.remove_flow(datapath, flow_id)
 

@@ -58,14 +58,14 @@ def compute_flow_id1(pkt, match_dict=None):
                                 tmp_dict['ipv4_dst'], tmp_dict['udp_dst'], tmp_dict['ip_proto'])
                 else:
                     return None
-            else:
-                return None
 
             if match_dict is not None:
                 match_dict.update(tmp_dict)
-
-            return hash(ip_tuple)
-
+            
+            if ip_tuple:
+                return hash(ip_tuple)
+            else:
+                return None
         else:
             return None
     else:
@@ -115,3 +115,14 @@ def add_flow_entry(datapath, match, actions, **kwargs):
                                 idle_timeout=idle_timeout, flags=flags)
     datapath.send_msg(mod)
 
+
+def mod_flow_entry(datapath, match, actions):
+    ofproto      = datapath.ofproto
+    parser       = datapath.ofproto_parser
+    
+    inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS,
+                                         actions)]
+    mod = parser.OFPFlowMod(datapath=datapath, command=ofproto.OFPFC_MODIFY,
+                            match=match, instructions=inst)
+    print mod
+    datapath.send_msg(mod)

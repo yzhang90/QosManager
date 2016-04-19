@@ -26,6 +26,7 @@ class QosTraffic(object):
                 self.classifier[id] = item
                 id = id + 1
 
+    
     def classify(self, pkt):
         pkt_eth = pkt.get_protocol(ethernet.ethernet)
         result = {'flow_id': None, 'match': {},
@@ -37,11 +38,14 @@ class QosTraffic(object):
         match['eth_type'] = pkt_eth.ethertype
         match['eth_src']  = pkt_eth.src
         match['eth_dst']  = pkt_eth.dst
+
+        if pkt_eth.ethertype != ether_types.ETH_TYPE_IP:
+            return None        
         
         flow_id = utils.compute_flow_id1(pkt, match)
 
         if flow_id is None:
-            return None
+            return result
 
         if flow_id in self.flows:
             #flow_id is already in the map, no need to classify this flow.
