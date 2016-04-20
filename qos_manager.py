@@ -63,7 +63,6 @@ class QosManager(app_manager.RyuApp):
         # Extract parameters
         msg = ev.msg
         datapath = msg.datapath
-        dpid = datapath.id
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
         pkt = packet.Packet(msg.data)
@@ -83,7 +82,7 @@ class QosManager(app_manager.RyuApp):
         # Only do the classificaion on IP packets
         if eth_type == ether_types.ETH_TYPE_IP:
             is_ip_flow = True
-            result = self.tc.classify(pkt)
+            result = self.tc.classify(datapath, pkt)
 
         out_port = self.forwarding.l2_switch(datapath, pkt, in_port)
 
@@ -98,7 +97,7 @@ class QosManager(app_manager.RyuApp):
             # verify if we have a valid buffer_id, if yes avoid to send both
             # flow_mod & packet_out
             if msg.buffer_id != ofproto.OFP_NO_BUFFER:
-                # only add idle_timeout to ip flows
+                # only add hard_timeout to ip flows
                 if is_ip_flow:
                     utils.add_flow_entry(datapath, match, actions, priority=1,
                                          buffer_id=msg.buffer_id, hard_timeout=self.hard_timeout)
@@ -107,7 +106,7 @@ class QosManager(app_manager.RyuApp):
                                          priority=1, buffer_id=msg.buffer_id)
                 return
             else:
-                # only add idle_timeout to ip flows
+                # only add hard_timeout to ip flows
                 if is_ip_flow:
                     utils.add_flow_entry(datapath, match, actions,
                                          priority=1, hard_timeout=self.hard_timeout)

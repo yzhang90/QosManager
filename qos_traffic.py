@@ -3,6 +3,7 @@ This module provides methods for traffic classification.
 """
 
 import logging
+import time
 
 from ryu.lib.packet import ethernet, ether_types
 from ryu.lib.packet import ipv4, tcp, udp
@@ -16,24 +17,30 @@ class QosTraffic(object):
 
     def __init__(self, config):
         super(QosTraffic, self).__init__()
-        traffic_config = config.traffic_config
+        # The flow_table keeps track of flowid: result mapping
+        self.flow_table = {}
+        # Given an entry, if curtime - its timestamp > timeout,
+        # this entry will be removed from the flow_table
+        self.timeout = 20
+        # Initilize classifier map
         self.classifier = {}
-        self.flows = {}
-        id = 1
+        traffic_config = config.traffic_config
+        num = 1
         for k, v in traffic_config.iteritems():
             for item in v:
                 item['traffic_type'] = k
-                self.classifier[id] = item
-                id = id + 1
+                self.classifier[num] = item
+                num = num + 1
 
     
-    def classify(self, pkt):
+    def classify(self, datapath, pkt):
+        timestamp = time.time()
         pkt_eth = pkt.get_protocol(ethernet.ethernet)
         result = {'flow_id': None, 'match': {},
-                  'traffic_type': None }
+                  'traffic_type': None, 'time': timestamp}
 
         #Get basic information from each flow
-        #Important! eth_type is required!
+        #Important: eth_type is required!
         match = result['match']
         match['eth_type'] = pkt_eth.ethertype
         match['eth_src']  = pkt_eth.src
@@ -47,9 +54,11 @@ class QosTraffic(object):
         if flow_id is None:
             return result
 
-        if flow_id in self.flows:
+        if flow_id in self.flow_table:
             #flow_id is already in the map, no need to classify this flow.
-            return self.flows[flow_id]
+            if datapath.id == 1:
+                self.flow_table[flow_id]['time'] = timestamp
+            return self.flow_table[flow_id]
         else:
             result['flow_id'] = flow_id
             
@@ -79,14 +88,20 @@ class QosTraffic(object):
                     continue
 
             result['traffic_type'] = item['traffic_type']
-            #bookkeep the classified result
-            self.flows[flow_id] = result 
-            return result
+            break
 
         #bookkeep the classified result
-        self.flows[flow_id] = result
+        self.flow_table[flow_id] = result
+        self.clean_table(timestamp)
         return result
     
 
-    def remove_flow(self, flowid):
-        self.flows.pop(flowid, None)
+    def clean_table(self, curtime):
+        remove = []
+        for k, v in self.flow_table.iteritems():
+            if curtime - v['time'] > self.timeout:
+                remove.append(k)
+
+        if remove:
+            for item in remove:
+                self.flow_table.pop(item)

@@ -3,7 +3,7 @@ This module provides methods for Qos control.
 """
 
 import logging
-import heapq
+import time
 
 from ryu.lib.packet import ether_types
 from ryu.lib.packet import in_proto as inet
@@ -28,8 +28,9 @@ class QosControl(object):
         for k, v in queue_config['queues'].iteritems():
             self.queues[k] = {'rate': utils.get_normalized_value(v),'used': 0}
         # Flow table
-        self.flows = {}
+        self.flow_table = {}
         self.counter = 0
+        self.timeout = 15
 
 
     # Based on bandwith, queues and flows, compute the optimal assignment of 
@@ -42,7 +43,7 @@ class QosControl(object):
         # Second construct sorted list from the flows dictionary
         tmp = []
         flows_assigned = {}
-        for k, v in self.flows.iteritems():
+        for k, v in self.flow_table.iteritems():
             score = self.qos_config[v['traffic_type']]['priority']
             rate = self.qos_config[v['traffic_type']]['recommended']
             seqid = v['id']
@@ -84,23 +85,23 @@ class QosControl(object):
     def update_flow_table(self, datapath, flow_assign, flow_id=None):
         parser = datapath.ofproto_parser
   
-        for k, v in self.flows.iteritems():
+        for k, v in self.flow_table.iteritems():
             changed = False
             if k in flow_assign:
                 if flow_assign[k] != v['queue']:
-                    self.flows[k]['queue'] = flow_assign[k]
+                    self.flow_table[k]['queue'] = flow_assign[k]
                     changed = True
             else:
                 if v['queue'] != 0:
-                    self.flows[k]['queue'] = 0
+                    self.flow_table[k]['queue'] = 0
                     changed = True
 
             if changed and k != flow_id:
-                out_queue = self.flows[k]['queue']
-                out_port = self.flows[k]['out_port']
+                out_queue = self.flow_table[k]['queue']
+                out_port = self.flow_table[k]['out_port']
                 actions = [parser.OFPActionSetQueue(out_queue),
                            parser.OFPActionOutput(out_port)]
-                match = parser.OFPMatch(**self.flows[k]['match'])
+                match = parser.OFPMatch(**self.flow_table[k]['match'])
                 utils.mod_flow_entry(datapath, match, actions)
 
 
@@ -111,29 +112,42 @@ class QosControl(object):
         if datapath.id != 1:
             return None
         if cflow is not None:
+            curtime = time.time()
+            self.clean_table(curtime)
             match = cflow['match']
             traffic_type = cflow['traffic_type']
             flow_id = cflow['flow_id']
+            timestamp = cflow['time']
             if flow_id is None:
                 return None
             if traffic_type is not None:
-                if flow_id not in self.flows:
-                    self.flows[flow_id] = {'traffic_type': traffic_type, 'out_port': out_port,
-                                           'queue': 0, 'id': self.counter, 'match': match}
+                if flow_id not in self.flow_table:
+                    self.flow_table[flow_id] = {'traffic_type': traffic_type, 'out_port': out_port,
+                                                'queue': 0, 'id': self.counter, 'match': match, 'time': timestamp}
                     self.counter = self.counter + 1
+                    result = self.compute_optimal_assignment()
+                    self.update_flow_table(datapath, result, flow_id)
+                else:
+                    self.flow_table[flow_id]['time'] = timestamp
                     result = self.compute_optimal_assignment()
                     self.update_flow_table(datapath, result, flow_id)
                 return flow_id
         return None
 
 
-    def remove_flow(self, datapath, flow_id):
-        item = self.flows.pop(flow_id, None)
-        if item:
-            result = self.compute_optimal_assignment()
-            self.update_flow_table(datapath, result, flow_id)
+    def clean_table(self, curtime):
+        remove = []
+        for k, v in self.flow_table.iteritems():
+            if curtime - v['time'] > self.timeout:
+                remove.append(k)
 
+        if remove:
+            for item in remove:
+                print "removed"
+                print self.flow_table[item]['match']
+                self.flow_table.pop(item)
 
+        
     def get_Actions(self, datapath, flow_id, in_port, out_port):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
@@ -142,9 +156,9 @@ class QosControl(object):
         if flow_id is not None:
             # Only do traffic shaping at switch 1 port 4
             if datapath.id == 1 and out_port == 4:
-                out_queue = self.flows[flow_id]['queue']
+                out_queue = self.flow_table[flow_id]['queue']
                 actions = [parser.OFPActionSetQueue(out_queue),
-                            parser.OFPActionOutput(out_port)]
+                           parser.OFPActionOutput(out_port)]
             else:
                 actions = [parser.OFPActionOutput(out_port)]
         # Normal Actions
