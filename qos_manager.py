@@ -128,7 +128,7 @@ class QosManager(app_manager.RyuApp):
                                       in_port=in_port, actions=actions, data=data)
             datapath.send_msg(out)
 
-
+    #TODO:since now using hard_timeout, flow_remove should be carefully designed
     #@set_ev_cls(ofp_event.EventOFPFlowRemoved, MAIN_DISPATCHER)
     #def _flow_removed_handler(self, ev):
         # Extract parameters
