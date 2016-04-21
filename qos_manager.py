@@ -2,8 +2,6 @@
 This is the main module of qos_switch
 """
 
-import time
-
 from ryu.base import app_manager
 from ryu.controller import ofp_event
 from ryu.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
@@ -24,7 +22,7 @@ class QosManager(app_manager.RyuApp):
     
     def __init__(self, *args, **kwargs):
         super(QosManager, self).__init__(*args, **kwargs)
-        self.hard_timeout = 10
+        self.idle_timeout = 10
 
         # Initialize modules
         self.config     = qos_config.QosConfig()
@@ -100,7 +98,7 @@ class QosManager(app_manager.RyuApp):
                 # only add hard_timeout to ip flows
                 if is_ip_flow:
                     utils.add_flow_entry(datapath, match, actions, priority=1,
-                                         buffer_id=msg.buffer_id, hard_timeout=self.hard_timeout)
+                                         buffer_id=msg.buffer_id, idle_timeout=self.idle_timeout)
                 else:
                     utils.add_flow_entry(datapath, match, actions,
                                          priority=1, buffer_id=msg.buffer_id)
@@ -109,7 +107,7 @@ class QosManager(app_manager.RyuApp):
                 # only add hard_timeout to ip flows
                 if is_ip_flow:
                     utils.add_flow_entry(datapath, match, actions,
-                                         priority=1, hard_timeout=self.hard_timeout)
+                                         priority=1, idle_timeout=self.idle_timeout)
                 else:
                     utils.add_flow_entry(datapath, match, actions, priority=1)
 
@@ -127,15 +125,15 @@ class QosManager(app_manager.RyuApp):
                                       in_port=in_port, actions=actions, data=data)
             datapath.send_msg(out)
 
-    #TODO:since now using hard_timeout, flow_remove should be carefully designed
-    #@set_ev_cls(ofp_event.EventOFPFlowRemoved, MAIN_DISPATCHER)
-    #def _flow_removed_handler(self, ev):
-        # Extract parameters
-    #    msg = ev.msg
-    #    print(msg)
-    #    datapath = msg.datapath
-    #    match = msg.match
-    #    flow_id = utils.compute_flow_id2(match)
-    #    self.tc.remove_flow(flow_id)
-    #    self.control.remove_flow(datapath, flow_id)
 
+    @set_ev_cls(ofp_event.EventOFPFlowRemoved, MAIN_DISPATCHER)
+    def _flow_removed_handler(self, ev):
+        # Extract parameters
+        msg = ev.msg
+        datapath = msg.datapath
+        if datapath.id != 1:
+            return None
+        match = msg.match
+        flow_id = utils.compute_flow_id2(match)
+        self.tc.remove_flow(flow_id)
+        self.control.remove_flow(datapath, flow_id)

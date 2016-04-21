@@ -26,7 +26,6 @@ class QosConfig(object):
             LOG.error("Failed to open class.yaml")
             sys.exit("Exiting config module")
 
-
         try:
             with open(qos_yaml, 'r') as f:
                 self.qos_config = yaml.load(f)
@@ -40,4 +39,3 @@ class QosConfig(object):
         except (IOError, OSError) :
             LOG.error("Failed to open queue.yaml")
             sys.exit("Exiting config module")
-

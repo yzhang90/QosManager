@@ -14,7 +14,6 @@ class QosForwarding(object):
     def __init__(self):
         # mapping from mac to port for switching
         self.mac_to_port = {}
-        self.propagate = False
 
     def l2_switch(self, datapath, pkt, in_port):
         dpid = datapath.id

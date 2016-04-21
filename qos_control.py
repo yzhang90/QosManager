@@ -3,7 +3,6 @@ This module provides methods for Qos control.
 """
 
 import logging
-import time
 
 from ryu.lib.packet import ether_types
 from ryu.lib.packet import in_proto as inet
@@ -30,7 +29,6 @@ class QosControl(object):
         # Flow table
         self.flow_table = {}
         self.counter = 0
-        self.timeout = 15
 
 
     # Based on bandwith, queues and flows, compute the optimal assignment of 
@@ -105,47 +103,35 @@ class QosControl(object):
                 utils.mod_flow_entry(datapath, match, actions)
 
 
-
     # Add a classified flow into the flow dictionary.
     # Return the flowid of the classified flow, otherwise return None
     def add_flow(self, datapath, cflow, out_port):
         if datapath.id != 1:
             return None
         if cflow is not None:
-            curtime = time.time()
-            self.clean_table(curtime)
             match = cflow['match']
             traffic_type = cflow['traffic_type']
             flow_id = cflow['flow_id']
-            timestamp = cflow['time']
             if flow_id is None:
                 return None
             if traffic_type is not None:
                 if flow_id not in self.flow_table:
                     self.flow_table[flow_id] = {'traffic_type': traffic_type, 'out_port': out_port,
-                                                'queue': 0, 'id': self.counter, 'match': match, 'time': timestamp}
+                                                'queue': 0, 'id': self.counter, 'match': match}
                     self.counter = self.counter + 1
-                    result = self.compute_optimal_assignment()
-                    self.update_flow_table(datapath, result, flow_id)
-                else:
-                    self.flow_table[flow_id]['time'] = timestamp
                     result = self.compute_optimal_assignment()
                     self.update_flow_table(datapath, result, flow_id)
                 return flow_id
         return None
 
 
-    def clean_table(self, curtime):
-        remove = []
-        for k, v in self.flow_table.iteritems():
-            if curtime - v['time'] > self.timeout:
-                remove.append(k)
-
-        if remove:
-            for item in remove:
-                print "removed"
-                print self.flow_table[item]['match']
-                self.flow_table.pop(item)
+    def remove_flow(self, datapath, flow_id):
+        if datapath.id != 1:
+            return None
+        item = self.flows.pop(flow_id, None)
+        if item:
+            result = self.compute_optimal_assignment()
+            self.update_flow_table(datapath, result, flow_id)
 
         
     def get_Actions(self, datapath, flow_id, in_port, out_port):

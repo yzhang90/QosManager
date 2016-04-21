@@ -3,9 +3,7 @@ This module provides methods for traffic classification.
 """
 
 import logging
-import time
 
-from ryu.lib.packet import ethernet, ether_types
 from ryu.lib.packet import ipv4, tcp, udp
 from ryu.lib.packet import in_proto as inet
 
@@ -19,9 +17,6 @@ class QosTraffic(object):
         super(QosTraffic, self).__init__()
         # The flow_table keeps track of flowid: result mapping
         self.flow_table = {}
-        # Given an entry, if curtime - its timestamp > timeout,
-        # this entry will be removed from the flow_table
-        self.timeout = 20
         # Initilize classifier map
         self.classifier = {}
         traffic_config = config.traffic_config
@@ -33,11 +28,10 @@ class QosTraffic(object):
                 num = num + 1
 
     
-    def classify(self, datapath, pkt):
-        timestamp = time.time()
+    def classify(self, pkt):
         pkt_eth = pkt.get_protocol(ethernet.ethernet)
         result = {'flow_id': None, 'match': {},
-                  'traffic_type': None, 'time': timestamp}
+                  'traffic_type': None}
 
         #Get basic information from each flow
         #Important: eth_type is required!
@@ -56,8 +50,6 @@ class QosTraffic(object):
 
         if flow_id in self.flow_table:
             #flow_id is already in the map, no need to classify this flow.
-            if datapath.id == 1:
-                self.flow_table[flow_id]['time'] = timestamp
             return self.flow_table[flow_id]
         else:
             result['flow_id'] = flow_id
@@ -92,16 +84,8 @@ class QosTraffic(object):
 
         #bookkeep the classified result
         self.flow_table[flow_id] = result
-        self.clean_table(timestamp)
         return result
     
 
-    def clean_table(self, curtime):
-        remove = []
-        for k, v in self.flow_table.iteritems():
-            if curtime - v['time'] > self.timeout:
-                remove.append(k)
-
-        if remove:
-            for item in remove:
-                self.flow_table.pop(item)
+    def remove_flow(self, flowid):
+        self.flows.pop(flowid, None)
