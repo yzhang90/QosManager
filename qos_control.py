@@ -128,7 +128,7 @@ class QosControl(object):
     def remove_flow(self, datapath, flow_id):
         if datapath.id != 1:
             return None
-        item = self.flows.pop(flow_id, None)
+        item = self.flow_table.pop(flow_id, None)
         if item:
             result = self.compute_optimal_assignment()
             self.update_flow_table(datapath, result, flow_id)

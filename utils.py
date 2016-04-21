@@ -100,19 +100,19 @@ def add_flow_entry(datapath, match, actions, **kwargs):
     parser       = datapath.ofproto_parser
     priority     = kwargs.setdefault('priority', 0)
     buffer_id    = kwargs.setdefault('buffer_id', None)
-    hard_timeout = kwargs.setdefault('hard_timeout', 0)
-    #flags        = kwargs.setdefault('flags', ofproto.OFPFF_SEND_FLOW_REM)
+    idle_timeout = kwargs.setdefault('idle_timeout', 0)
+    flags        = kwargs.setdefault('flags', ofproto.OFPFF_SEND_FLOW_REM)
 
     inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS,
                                          actions)]
     if buffer_id:
         mod = parser.OFPFlowMod(datapath=datapath, buffer_id=buffer_id,
                                 priority=priority, match=match,
-                                instructions=inst, hard_timeout=hard_timeout)
+                                instructions=inst, idle_timeout=idle_timeout, flags=flags)
     else:
         mod = parser.OFPFlowMod(datapath=datapath, priority=priority,
                                 match=match, instructions=inst,
-                                hard_timeout=hard_timeout)
+                                idle_timeout=idle_timeout, flags=flags)
     datapath.send_msg(mod)
 
 

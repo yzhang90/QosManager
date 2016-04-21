@@ -4,6 +4,7 @@ This module provides methods for traffic classification.
 
 import logging
 
+from ryu.lib.packet import ethernet, ether_types
 from ryu.lib.packet import ipv4, tcp, udp
 from ryu.lib.packet import in_proto as inet
 
@@ -88,4 +89,4 @@ class QosTraffic(object):
     
 
     def remove_flow(self, flowid):
-        self.flows.pop(flowid, None)
+        self.flow_table.pop(flowid, None)
