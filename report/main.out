@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Related work}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Traditional QoS strategies}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{SDN enabled QoS approach}{section.2}% 4
+\BOOKMARK [1][-]{section.3}{Approach}{}% 5
+\BOOKMARK [2][-]{subsection.3.1}{Configuration Module}{section.3}% 6
+\BOOKMARK [2][-]{subsection.3.2}{Flow classfier module}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.3}{Traffic monitor module}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.4}{Control Module}{section.3}% 9
+\BOOKMARK [3][-]{subsubsection.3.4.1}{Dynamic queue assignment algorithm}{subsection.3.4}% 10
+\BOOKMARK [2][-]{subsection.3.5}{Web Portal Module}{section.3}% 11
+\BOOKMARK [2][-]{subsection.3.6}{Implementation}{section.3}% 12
+\BOOKMARK [1][-]{section.4}{Evaluation}{}% 13
+\BOOKMARK [2][-]{subsection.4.1}{Evaluation setup}{section.4}% 14
+\BOOKMARK [3][-]{subsubsection.4.1.1}{Scenario 1}{subsection.4.1}% 15
+\BOOKMARK [3][-]{subsubsection.4.1.2}{Scenario 2}{subsection.4.1}% 16
+\BOOKMARK [1][-]{section.5}{Conclusion and Future work}{}% 17

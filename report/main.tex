@@ -1,0 +1,73 @@
+\documentclass[11pt]{sigplanconf}
+%Balanced Columns on Last Page 
+\usepackage{flushend}
+
+%Widows and Orphans 
+\clubpenalty = 10000
+\widowpenalty = 10000
+\displaywidowpenalty = 10000
+
+\usepackage[colorlinks,
+            linkcolor=blue,
+            anchorcolor=blue,
+            citecolor=blue
+            ]{hyperref}
+\usepackage{amsmath}
+\usepackage{framed}
+\usepackage{breakurl}
+\usepackage{multirow}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage[linesnumbered,boxed,ruled,nofillcomment]{algorithm2e}
+
+
+\graphicspath{{figure/}{figures/}{logo/}{logos/}{graph/}{graphs}}
+\DeclareGraphicsExtensions{.pdf,.eps,.png,.jpg,.jpeg}
+
+
+\newcommand{\tabincell}[2]{\begin{tabular}{@{}#1@{}}#2\end{tabular}}
+
+
+\begin{document}
+
+
+\doi{2502323.2502331} 
+
+
+
+\newcommand{\todo}[1]{{\textbf{(TODO: #1)}}}
+\newcommand{\code}[1]{{\tt#1}}
+\newcommand{\reffig}[1]{Figure.~\ref{fig:#1}}
+\newcommand{\refsect}[1]{Section~\ref{sect:#1}}
+\newcommand{\reftable}[1]{Table~\ref{table:#1}}
+\newcommand{\refalg}[1]{Algorithm~\ref{alg:#1}}
+\long\def\comment#1{}
+
+
+
+\title{Configurable and Adaptive QoS Management via SDN}
+
+\authorinfo{Yi Zhang}
+           {Department of Computer Science \\ University of Illinois at Urbana-Champaign}
+			{yzhng173@illinois.edu}
+\authorinfo{Qi Wang}
+           {Department of Computer Science \\ University of Illinois at Urbana-Champaign}
+		   {qiwang11@illinois.edu}
+% make the title area
+\maketitle
+
+\input{body/abstract.tex}
+\input{body/introduction.tex}
+\input{body/relatedwork.tex}
+\input{body/approach.tex}
+\input{body/experiment.tex}
+\input{body/futurework.tex}
+
+\newpage
+% references section
+\bibliographystyle{plain}
+\bibliography{ref/ref}
+
+\end{document}
