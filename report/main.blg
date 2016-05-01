@@ -4,47 +4,48 @@ The top-level auxiliary file: main.aux
 The style file: plain.bst
 Database file #1: ref/ref.bib
 Warning--to sort, need author or key in DiffServ
+Warning--to sort, need author or key in nmeta
 Warning--to sort, need author or key in ryu
 Warning--to sort, need author or key in mininet
-You've used 6 entries,
+You've used 7 entries,
             2118 wiz_defined-function locations,
-            532 strings with 5267 characters,
-and the built_in function-call counts, 2217 in all, are:
-= -- 216
-> -- 112
+            535 strings with 5317 characters,
+and the built_in function-call counts, 2376 in all, are:
+= -- 231
+> -- 113
 < -- 3
-+ -- 46
++ -- 47
 - -- 40
-* -- 149
-:= -- 329
-add.period$ -- 18
-call.type$ -- 6
-change.case$ -- 38
+* -- 154
+:= -- 346
+add.period$ -- 20
+call.type$ -- 7
+change.case$ -- 41
 chr.to.int$ -- 0
-cite$ -- 9
-duplicate$ -- 84
-empty$ -- 182
+cite$ -- 11
+duplicate$ -- 91
+empty$ -- 205
 format.name$ -- 40
-if$ -- 494
+if$ -- 534
 int.to.chr$ -- 0
-int.to.str$ -- 6
+int.to.str$ -- 7
 missing$ -- 3
-newline$ -- 30
+newline$ -- 34
 num.names$ -- 6
-pop$ -- 57
+pop$ -- 65
 preamble$ -- 1
-purify$ -- 32
+purify$ -- 34
 quote$ -- 0
-skip$ -- 72
+skip$ -- 80
 stack$ -- 0
-substring$ -- 102
-swap$ -- 29
+substring$ -- 107
+swap$ -- 30
 text.length$ -- 3
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 24
-warning$ -- 3
+type$ -- 28
+warning$ -- 4
 while$ -- 15
-width$ -- 7
-write$ -- 61
-(There were 3 warnings)
+width$ -- 8
+write$ -- 68
+(There were 4 warnings)
