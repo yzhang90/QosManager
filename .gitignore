@@ -1,2 +1,10 @@
 *.pyc
-.DS_Store
+**/.DS_Store
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.log
+*.out
+*.ps
+*.bak
