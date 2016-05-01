@@ -1,4 +1,0 @@
-\begin{abstract}
-Apache Storm is a distributed real-time stream processing framework. In Storm, tuple processing latency is a very important metric to evaluate the system performance. A tuple is regarded as failure if it has not been fully processed within a user-specified timeout. To guarantee processing of all tuples, failed tuples will be replayed later to the system until success, which leads to a long tail latency. Although various techniques have been proposed to reduce the average latency of Storm, they do not consider much about tail latency. In this project, we propose several algorithms such as dynamic timeout adjustment and failed tuple prioritization, to cut the tail latency of Storm.
-
-\end{abstract}
