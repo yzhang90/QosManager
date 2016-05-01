@@ -1,14 +1,39 @@
 \begin{thebibliography}{1}
 
+\bibitem{DiffServ}
+Differentiated services.
+\newblock \url{https://en.wikipedia.org/wiki/Differentiated_services}.
+
+\bibitem{mininet}
+Mininet: An instant virtual network on your laptop (or other pc).
+\newblock \url{http://mininet.org/}.
+
 \bibitem{ryu}
 Ryu sdn framework.
 \newblock \url{https://osrg.github.io/ryu/}.
 
-\bibitem{Zhu2014SOCC}
-Timothy Zhu, Alexey Tumanov, Michael~A. Kozuch, Mor Harchol-Balter, and
-  Gregory~R. Ganger.
-\newblock Prioritymeister: Tail latency qos for shared networked storage.
-\newblock In {\em Proceedings of the ACM Symposium on Cloud Computing}, SOCC
-  '14, pages 29:1--29:14, New York, NY, USA, 2014. ACM.
+\bibitem{Egilmez_ASPIPA12}
+H.~E. Egilmez, S.~T. Dane, K.~T. Bagci, and A.~M. Tekalp.
+\newblock {OpenQoS: An OpenFlow controller design for multimedia delivery with
+  end-to-end Quality of Service over Software-Defined Networks}.
+\newblock In {\em Signal \& Information Processing Association Annual Summit
+  and Conference (APSIPA ASC), 2012 Asia-Pacific}, pages 1--8. IEEE, December
+  2012.
+
+\bibitem{Seddiki_HotSDN14}
+M.~Said Seddiki, Muhammad Shahbaz, Sean Donovan, Sarthak Grover, Miseon Park,
+  Nick Feamster, and Ye-Qiong Song.
+\newblock Flowqos: Qos for the rest of us.
+\newblock In {\em Proceedings of the Third Workshop on Hot Topics in Software
+  Defined Networking}, HotSDN '14, pages 207--208, New York, NY, USA, 2014.
+  ACM.
+
+\bibitem{Sharma_EWSDN14}
+Sachin Sharma, Dimitri Staessens, Didier Colle, D~Palma, J~Goncalves,
+  R~Figueiredo, D~Morris, Mario Pickavet, and Piet Demeester.
+\newblock Implementing quality of service for the software defined networking
+  enabled future internet.
+\newblock In {\em The European Workshop on Software Defined Networking,
+  Proceedings}, pages 49--54. IEEE, 2014.
 
 \end{thebibliography}

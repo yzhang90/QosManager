@@ -1,5 +1,14 @@
 \section{Approach}
 \label{sect:approach}
+\subsection{Overview}
+\reffig{architecture} shows the high-level architecture of our system.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.5\textwidth]{arch}
+\caption{}
+\label{fig:architecture}
+\end{figure}
+
 \subsection{Configuration Module}
 In the configuration file, users only need to configure 3 parameters for a services. The following figure is part of a configuration file.
 The minimum rate parameter specifies the minimum bandwidth the service requires.The recommended rate parameter specifies the desired bandwidth for the service.
@@ -22,6 +31,14 @@ $$\sum_{i=1}^{n} Bandwidth_i <= C $$. C is the total bandwidth of the network.
 
 
 \subsubsection{Dynamic queue assignment algorithm}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.5\textwidth]{assign_queue}
+\caption{}
+\label{fig:assign_queue}
+\end{figure}
+
 \subsection{Web Portal Module}
 This module is for user configuration and traffic statistics.
 \subsection{Implementation}

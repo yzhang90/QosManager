@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=latex 2014.5.25)  28 APR 2016 23:31
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=latex 2014.5.25)  30 APR 2016 20:25
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -502,48 +502,88 @@ Overfull \vbox (15.73213pt too high) detected at line 60
 (./body/abstract.tex
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1.
-) (./body/introduction.tex) (./body/relatedwork.tex
+) (./body/introduction.tex
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 3.
-)
-(./body/approach.tex
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 11.
+
+
+LaTeX Warning: Reference `sect:appraoch' on page 1 undefined on input line 11.
+
+) (./body/relatedwork.tex
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 14.
-
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 7.
  [1
 
 
-])
-(./body/experiment.tex) (./body/futurework.tex) [2] (./main.bbl
-Underfull \hbox (badness 1424) in paragraph at lines 4--6
+]
+Missing character: There is no â in font ptmr7t!
+Missing character: There is no € in font ptmr7t!
+Missing character: There is no ™ in font ptmr7t!
+Missing character: There is no â in font ptmr7t!
+Missing character: There is no € in font ptmr7t!
+Missing character: There is no ™ in font ptmr7t!
+) (./body/approach.tex
+File: figures/arch.eps Graphic file (type eps)
+ <figures/arch.eps>
+Overfull \hbox (12.0pt too wide) in paragraph at lines 7--8
+ [][] 
+ []
+
+File: figures/assign_queue.eps Graphic file (type eps)
+<figures/assign_queue.eps>
+Overfull \hbox (12.0pt too wide) in paragraph at lines 37--38
+ [][] 
+ []
+
+) (./body/experiment.tex [2]
+File: figures/exp_setup.eps Graphic file (type eps)
+ <figures/exp_setup.eps>
+Overfull \hbox (12.0pt too wide) in paragraph at lines 10--11
+ [][] 
+ []
+
+) (./body/futurework.tex) [3] (./main.bbl
+Underfull \hbox (badness 2302) in paragraph at lines 4--6
+[]\OT1/ptm/m/n/10 Differentiated ser-vices.  [][][][][][][][][][][][][][][][]
+ []
+
+
+Underfull \hbox (badness 1424) in paragraph at lines 12--14
 []\OT1/ptm/m/n/10 Ryu sdn frame-work.  [][][][][][][][][][][][][][][][][][][][]
 []
+ []
+
+
+Underfull \hbox (badness 7814) in paragraph at lines 32--38
+[]\OT1/ptm/m/n/10 Sachin Sharma, Dim-itri Staessens, Di-dier Colle,
  []
 
 )
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 73.
 - LAST -
-Extra skip:17.85803pt
-Left:63.26794pt/2.16492pt
-Right:45.40991pt/0.0pt
-Output:63.26794pt
- [3]
+Extra skip:22.12805pt
+Left:177.26794pt/1.40991pt
+Right:155.1399pt/0.0pt
+Output:177.26794pt
+ [4]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 73.
  (./main.aux)
 Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 73.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 73.
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 17FC5C7FA0C8F628569A8914C2681D92;1097.
+(rerunfilecheck)             Checksum: 19BC419644C96CE1CF16B4BFDFD6F18F;1568.
+
+
+LaTeX Warning: There were undefined references.
+
  ) 
 Here is how much of TeX's memory you used:
- 10424 strings out of 493118
- 153709 string characters out of 6135459
- 283059 words of memory out of 5000000
- 13767 multiletter control sequences out of 15000+600000
+ 10464 strings out of 493118
+ 154352 string characters out of 6135459
+ 287834 words of memory out of 5000000
+ 13795 multiletter control sequences out of 15000+600000
  13656 words of font info for 41 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 61i,10n,96p,788b,383s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 61i,10n,96p,788b,369s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on main.dvi (3 pages, 19340 bytes).
+Output written on main.dvi (4 pages, 32860 bytes).
