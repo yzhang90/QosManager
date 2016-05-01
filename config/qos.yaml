@@ -3,11 +3,10 @@ Video:
     recommended: 5Mbps
     priority: 10
 VoIP:
-    minimum: 2Mbps
-    recommended: 4Mbps
+    minimum: 400kbps
+    recommended: 1.2Mpbs
     priority: 8
 Game:
     minimum: 512Kbps
     recommended: 1Mbps
     priority: 6
-    
