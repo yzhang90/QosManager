@@ -598,7 +598,7 @@
 \newcommand{\reprintprice}[1]{%
   \gdef \@reprintprice {#1}}
 
-\reprintprice{\$15.00}
+\reprintprice{}
 
 \long\def \toappear #1{%
   \def \@toappear {#1}}
