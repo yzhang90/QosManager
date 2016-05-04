@@ -30,7 +30,7 @@ server, called SDN controller, which facilitates dynamic configuration, operatio
 In this paper, we present QoSManager, a configurable and adaptive QoS management framework based on SDN. In
 QosManger, users specify high-level QoS requirements (e.g, minimum bandwidth, recommended bandwidth and priority)
 for different types of traffic, and QoSManager controller will dynamically assign each flow to a queue with
-appropriate rates to maximize the QoS requirements satisfied under the limited link capacity. QoSManger provides an
+appropriate rate to maximize the QoS requirements satisfied under the limited link capacity. QoSManger provides an
 interface for modifying QoS requirements at runtime (configurable) and recompute the assignment of flows to queues
 when flow is added to or removed from the network (adaptive).
 
@@ -43,7 +43,7 @@ effectiveness of QosManager by using Mininet~\cite{mininet} and D-ITG~\cite{d-it
 The rest of the paper proceeds as follows. 
 \refsect{related} presents related work in QoS, as well as SDN-based solutions
 for home and broadband access networks. 
-\refsect{appraoch} describes the design of our system, as well as its implementation using Ryu and Open vSwitch.
+\refsect{qosmanager} describes the design of our system, as well as its implementation using Ryu and Open vSwitch.
 \refsect{experiment} evaluates
 our system in the
 context of competing flows. \refsect{future} discusses future work

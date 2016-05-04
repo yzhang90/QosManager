@@ -1,19 +1,40 @@
-\section{Approach}
-\label{sect:approach}
-In this section, we describe the design and implementation of our system. 
-We first present the overview of our design and then describe the each component in detail.
+\section{QoSManager Framework}
+\label{sect:qosmanager}
+In this section, we describe the design and implementation of QoSManager. We first present
+an overview of the design and then describe each component in detail.
 
 \subsection{Overview}
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.5\textwidth]{arch}
-\caption{The architecture of our system.}
+\caption{QoSManager architecture}
 \label{fig:architecture}
 \end{figure}
 
-\reffig{architecture} shows the high-level architecture of our system.
-Users could get the statistics of the network and configure QoS requirements for the services they are using via a Web portal. Users specify the mininum rate, recommended rate and priority they want for each application. 
+QosManager is built on top of Ryu SDN controller. As depicted in \reffig{architecture}, the main
+components in QosManager are: \todo{delete the arrow from traffic monitor to control module}
+
+\begin{itemize}
+  \item \emph{Web Portal}: The web portal provides an interface for users to set QoS parameters for
+    different types of traffic. In addition, users could also view the real time statistical
+    information about traffic flows in the web portal.
+  \item \emph{Configuration Module}: The QoS requirements are stored in a QoS configuration file in YAML
+    format. Configuration module mainly handles the configuration file and passes the QoS requirements
+    to the underlying three modules (traffic classification, forwarding and control, respectively).
+  \item \emph{Traffic Classification Module}: The traffic classfication module classifies the application
+    type for each flow. In the current implentation, the classification is performed by querying a statically
+    defined database.
+  \item \emph{Forwarding Module}: The forwarding module is responsible for making forwarding discussions (e.g,
+    to which port should send the packet). Currently, we implement a simple L2 switch. The more sophisticated
+    forwarding module are discussed in \refsect{future}.
+  \item \emph{Control Module}: The control module is the core of QosManger. It dynamically computes the
+    assignments of flows to queues with appropriate rates based on the Qos requirements and global information
+    about the flows in the network.
+
+
+\end{itemize}
+
 
 When the first packet of a flow arrives at the switch, a
 copy of this packet is forwarded to the controller. The switch
@@ -25,7 +46,8 @@ should classify the application type for the flow. Each application
 type is associated with a different queue, each of
 which is shaped according to the traffic shaping policy for the application.
 
-\subsection{Configuration Module}
+\subsection{QoS Parameters}
+\label{sect:qos params}
 In the configuration file, users only need to configure 3 parameters for a services. The following figure is part of a configuration file.
 The minimum rate parameter specifies the minimum bandwidth the service requires.The recommended rate parameter specifies the desired bandwidth for the service.
 The priority parameter specifies the users' prefenrece for the service.
