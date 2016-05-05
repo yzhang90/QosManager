@@ -1,7 +1,7 @@
 \section{QoSManager Framework}
 \label{sect:qosmanager}
 In this section, we describe the design and implementation of QoSManager. We first present
-an overview of the design and then describe each component in detail.
+an overview of the design and then describe the important components in detail.
 
 \subsection{Overview}
 
@@ -12,69 +12,106 @@ an overview of the design and then describe each component in detail.
 \label{fig:architecture}
 \end{figure}
 
-QosManager is built on top of Ryu SDN controller. As depicted in \reffig{architecture}, the main
-components in QosManager are: \todo{delete the arrow from traffic monitor to control module}
+QosManager is implemented as an application on top of Ryu SDN controller. As depicted in \reffig{architecture},
+the main components in QosManager are: \todo{redraw the architecture. Can refer to nmeta}
 
 \begin{itemize}
   \item \emph{Web Portal}: The web portal provides an interface for users to set QoS parameters for
-    different types of traffic. In addition, users could also view the real time statistical
-    information about traffic flows in the web portal.
+    different types of traffic. In addition, users could also view the real time statistical information
+    about the traffic flows from the web portal.
   \item \emph{Configuration Module}: The QoS requirements are stored in a QoS configuration file in YAML
     format. Configuration module mainly handles the configuration file and passes the QoS requirements
     to the underlying three modules (traffic classification, forwarding and control, respectively).
-  \item \emph{Traffic Classification Module}: The traffic classfication module classifies the application
-    type for each flow. In the current implentation, the classification is performed by querying a statically
+  \item \emph{Traffic Classification Module}: The traffic classification module classifies the application
+    type for each flow. It maintains a lookup table \emph{tc\_table} where the key is the hash value of a
+    flow's five-tuple (e.g.,source IP address, destination IP address, protocol, source port and destination port).
+    The value is the application type for the flow. Each table entry is also associated with a timestamp indicating
+    when the flow starts. In the current implementation, the classification is performed by querying a statically
     defined database.
-  \item \emph{Forwarding Module}: The forwarding module is responsible for making forwarding discussions (e.g,
-    to which port should send the packet). Currently, we implement a simple L2 switch. The more sophisticated
-    forwarding module are discussed in \refsect{future}.
+  \item \emph{Forwarding Module}: The forwarding module is responsible for making forwarding decisions (e.g.,
+    to which port the packet should be sent). Currently, we implement a simple L2 switch. The more sophisticated
+    forwarding module is discussed in \refsect{future}.
   \item \emph{Control Module}: The control module is the core of QosManger. It dynamically computes the
-    assignments of flows to queues with appropriate rates based on the Qos requirements and global information
-    about the flows in the network.
-
-
+    assignments of flows to queues with appropriate sending rates based on the Qos requirements, the global
+    information about the flows in the network and the queue settings at a port.
+  \item \emph{Traffic Monitor Module}: The traffic monitor module monitors the traffic flows in the network
+    and constantly reports the flow status information and the port status information to the web portal.
 \end{itemize}
 
-
-When the first packet of a flow arrives at the switch, a
-copy of this packet is forwarded to the controller. The switch
-continues to perform default forwarding of the traffic flows until
-application identification has been performed, essentially
-“lazily” implementing QoS only once application classification
-is complete. The controller determines which classifier
-should classify the application type for the flow. Each application
-type is associated with a different queue, each of
-which is shaped according to the traffic shaping policy for the application.
+When the first packet of a flow arrives at a switch, it does not match any entries in the flow table(s) and
+it is forwarded to the controller. The Ryu SDN controller receives a \textsf{PacketIn} event and passes the
+packet to QoSManager. QosManager calls the traffic classification module to classify the application type for
+the flow and stores the result with a timestamp in a lookup table \emph{tc\_table}. QoSManager then invokes
+the forwarding module to make the forwarding decision. The forwarding module basically implements a simple L2
+switch and maintains a \emph{mac\_to\_port} table. Subsequently, QoSManager calls the control module to compute
+the assignments of flows to queues with appropriate rates. Based on the forwarding decision and the assignments,
+QoSManager directs the controller to send \textsf{FlowMod} messages to the switch. In addition, when a flow is
+removed from a switch, the controller will receive a \textsf{FlowRemove} event and pass the flow information to
+QoSManager. QosManager then invokes the control module to recompute the assignments and send \textsf{FlowMod}
+messages. Note that a flow added or removed may affect the assignments of multiple flows and thus multiple
+\textsf{FlowMod} messages will be sent to the switch.\todo{Add outline for subsections} 
 
 \subsection{QoS Parameters}
 \label{sect:qos params}
-In the configuration file, users only need to configure 3 parameters for a services. The following figure is part of a configuration file.
-The minimum rate parameter specifies the minimum bandwidth the service requires.The recommended rate parameter specifies the desired bandwidth for the service.
-The priority parameter specifies the users' prefenrece for the service.
-For example, in the figure, the minimum rate for video is 1.5M and the recommended rate for vidoe is 7M. The priority for video, which is 10, is much higher than other types of services. So our SDN controller will try to first satisfy the QoS requirements for the video services in the network.
+An entry in a QoS configuration is defined as:
 
-User define configuration in YAML format
-\subsection{Flow classfier module}
-The flow classifier maintains a lookup table where the key is a flow’s five-tuple (e.g., source IP address, destination IP address, protocol, source port, and destination port). When a
-sender initiates a new flow, the switch sends a copy of the first packet of the flow to the controller. The flow classifier then checks whether the flow’s tuple correspond to an entry in this lookup table. The lookup then returns the type of application, such as video, VoIP, P2P, gaming, or web.
+\begin{lstlisting}[basicstyle=\sffamily]
+<application_type>:
+  minimum: <integer> Kbps
+  recommended: <integer> Kbps
+  priority: <integer>
+\end{lstlisting}
 
-As traffic classification is not the focus of our project, in our implementation, we use static flow classifer to classfity the traffic.
+For each type of application (e.g., video, VoIP, gaming, P2P, etc.), users needs to configure 3 parameters. The \emph{priority}
+parameter specifies the users' preference for the application. The higher the value is, the more important this type of
+application is. We noticed that applications such as video streaming usually have different levels of QoS. Thus, we introduce two
+parameters instead of one parameter to specify the requirement for an application. The \emph{minimum} parameter specifies
+the minimum bandwidth the application requires. The \emph{recommended} parameter specifies the desired bandwidth for best
+performance. \todo{explain the parameters with a concrete example}
+%For example, in the figure, the minimum rate for video is 1.5M and the recommended rate for vidoe is 7M. The priority for video, which is 10, is much higher than other types of services. So our SDN controller will try to first satisfy the QoS requirements for the video services in the network.
 
-It is very easy to extend our traffic classfication module to be more fine-grained and flexible. For example, we can easily integrate other approaches, such as DNS-based classifier~\cite{Seddiki_HotSDN14}, to our module. Or we can use the nmeta project~\cite{nmeta} as our traffic classification module.
+%\subsection{Flow classfier module}
+%As traffic classification is not the focus of our project, in our implementation, we use static flow classifer to classfity the traffic.
+%
+%It is very easy to extend our traffic classfication module to be more fine-grained and flexible. For example, we can easily integrate other approaches, such as DNS-based classifier~\cite{Seddiki_HotSDN14}, to our module. Or we can use the nmeta project~\cite{nmeta} as our traffic classification module.
 
-\subsection{Traffic monitor module}
-
-
-
-\begin{itemize}
-\item Flow statistics
-\item Port statistics
-\end{itemize}
 \subsection{Control Module}
-On a high level, our control module tries to satisfy a maximum number of QoS requirements with the limited bandwidth.
-Each type of service has been configured by the user with a priority. We assign a weight to the service based on the actual bandwidth it will get. For example, the weight of a service is 0.6 if the minimum rate bandwidth is achieved. The weight is 1.0 if the recommended rate bandwidth is achieved.
-Our algorithm allocates bandwidth to different services to get the maximum value of $$\sum_{i=1}^{n} Weight_i*Prioriy_i $$ under the condition that
-$$\sum_{i=1}^{n} Bandwidth_i <= C $$. C is the total bandwidth of the network.
+The control module 
+\subsubsection{QoS Utility Function}
+\label{sect:qos untility funciton}
+When the total bandwidth required by all the flows through a link exceeds the link capacity, we need to prioritize the applications'
+traffic flows so that the QoS of the high priority applications can be effectively enforced. At a high level, the control module
+assigns each flow to an appropriate rate to maximize the QoS requirements satisfied in a shared link. In order to quantify the QoS
+requirements satisfied, we assign a score to each flow. The score for a flow \emph{f} is defined as:
+\begin{equation}
+\scalebox{0.8}{
+  $score(f) =
+    \begin{cases}
+      priority       & \quad \text{if } bandwidth(f) = \text{ recommended}\\
+      0.6 * priority & \quad \text{if } bandwidth(f) = \text{ minimum}\\
+      0              & \quad \text{if } f \text{ can not be guaranteed QoS}\\
+    \end{cases}$
+}
+\end{equation}
+The goal is to maximize 
+\begin{equation}
+\scalebox{0.8}{
+ $\sum_{i=1}^{n} score(f_i) \quad \text{under } \sum_{i=1}^{n} bandwidth(f_i) \leq C $
+}
+\end{equation}
+C is the total bandwidth of the shared link. 
+
+However, existing home routers do not support per-flow rate control and even the Open vSwitch (OVS) does not yet support per-flow QoS
+in OpenFlow 1.3 specification. To overcome this limitation, QosManager enables per-flow QoS by creating a list of pre-defined queues
+with different sending rates at the ports of the shared link. Here we assume that all the flows share a single link as shown in \reffig{setup}.
+In order to make this approach to work, 
+
+
+
+%On a high level, our control module tries to satisfy a maximum number of QoS requirements with the limited bandwidth.
+%Each type of service has been configured by the user with a priority. We assign a weight to the service based on the actual bandwidth it will get. For example, the weight of a service is 0.6 if the minimum rate bandwidth is achieved. The weight is 1.0 if the recommended rate bandwidth is achieved.
+%Our algorithm allocates bandwidth to different services to get the maximum value of $$\sum_{i=1}^{n} Weight_i*Prioriy_i $$ under the condition that
+%$$\sum_{i=1}^{n} Bandwidth_i <= C $$. C is the total bandwidth of the network.
 
 
 \subsubsection{Dynamic queue assignment algorithm}
@@ -86,9 +123,3 @@ $$\sum_{i=1}^{n} Bandwidth_i <= C $$. C is the total bandwidth of the network.
 \label{fig:assign_queue}
 \end{figure}
 
-\subsection{Web Portal Module}
-This module is for user configuration and traffic statistics.
-
-
-\subsection{Implementation}
-Implementation is based on Ryu SDN controller~\cite{ryu} and OpenVSwitch.
