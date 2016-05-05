@@ -10,16 +10,16 @@ connection speed in the United States is 12.6Mbps. When users use multiple appli
 these applications compete for the relatively scarce bandwidth, thus leading to degradations of overall
 performance.
 
-A common approach to this problem is to prioritize applications' traffic flows so that it can effectively
-enforce QoS of high priority applications. To this end, many QoS mechanisms have been proposed and
+A common approach to this problem is to prioritize applications' traffic flows so that QoS of high
+priority applications can be effectively enforced. To this end, many QoS mechanisms have been proposed and
 implemented (\todo{citations}). Nonetheless, these mechanisms have not been deployed in small scale broadband
 access networks (e.g., home networks), for several reasons. First, many home routers have limited memory and
-computation resources and may not be able to process and enforce complicated QoS requirements "on-the-fly"
-(\todo{citations}). Second, users' demands of QoS for different applications may change in different scenarios. 
-For example, in a home network setting, a user may demand high definition (HD) quality of videos while no one
-is playing online video games. When other users are playing online video games, she is willing to accept standard
-definition (SD) quality of videos. However, many home users do not have knowledge to configure the underlying
-networks to meet their needs.
+computation resources. Therefore, they may not be able to process and enforce complicated QoS requirements
+"on-the-fly" (\todo{citations}). Second, users' demands of QoS for different applications may change in different
+scenarios. For example, in a home network setting, a user may demand high definition (HD) quality of videos while
+no one is playing online video games. When other users are playing online video games, she is willing to accept
+standard definition (SD) quality of videos. However, many home users do not have knowledge to configure the
+underlying networks to meet their needs.
 
 Recently Software Defined Networking (SDN) has emerged as a promising approach for providing flexible network
 programmability. SDN proposes to decouple the control plane from the data plane, and therefore it leaves the
@@ -30,13 +30,13 @@ server, called SDN controller, which facilitates dynamic configuration, operatio
 In this paper, we present QoSManager, a configurable and adaptive QoS management framework based on SDN. In
 QosManger, users specify high-level QoS requirements (e.g., minimum bandwidth, recommended bandwidth and priority)
 for different types of traffic, and QoSManager controller will dynamically assign each flow to a queue with an
-appropriate sending rate to maximize the QoS requirements satisfied under the limited link capacity. QoSManger
-provides an interface for modifying QoS requirements at runtime (configurable) and recompute the assignments of
-flows to queues when flow is added to or removed from the network (adaptive).
+appropriate sending rate to maximize the QoS utility function (\refsect{qosUF}) under the limited link capacity.
+QoSManger provides an interface for modifying QoS requirements at runtime (configurable) and recompute the assignments
+of flows to queues when flow is added to or removed from the network (adaptive).
 
-This paper presents several contributions. First, we take into account that the QoS requirement for an application
-may change in different scenarios when designing the specification language. Second, we design and implement
-QoSManager, a configurable and adaptive QoS management framework using SDN support. Specifically, we propose a novel
+This paper presents several contributions. First, we design the specification language,  we take into account
+that the QoS requirement for an application may change in different scenarios. Second, we design and implement
+QoSManager, a configurable and adaptive QoS management framework using SDN support. Especially, we propose a novel
 algorithm to assign flows to queues with appropriate rates to effectively enforce QoS. Third, we demonstrate the
 effectiveness of QosManager by using Mininet~\cite{mininet} and D-ITG~\cite{d-itg}.
 
