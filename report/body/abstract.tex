@@ -7,10 +7,9 @@ QoS parameters of the underlying network to meet their needs. In this paper, we 
 \emph{QoSManager}, a configurable and adaptive QoS management framework. QoSManager provides an
 interface for users to specify QoS requirements for different applications at runtime (configurable).
 It monitors the network and dynamically installs traffic shaping rules for application flows (adaptive). 
-In QoSManager, we propose a novel algorithm that takes QoS requirements and global information about
-flows in the network as input and outputs an assignment of flows to queues with appropriate rates to maximize
-the QoS requirements satisfied under the limited bandwidth. We implement QoSManager on top of Ryu and
-Open vSwitch (OVS) and demonstrate that it can effectively provide QoS guarantee according to users'
-specifications in the presence of active competing traffic.
+In QoSManager, we propose a novel algorithm that computes an assignment of flows to queues with
+appropriate rates to maximize the QoS requirements satisfied under the limited bandwidth. We implement
+QoSManager on top of Ryu and Open vSwitch (OVS) and demonstrate that it can effectively provide QoS
+guarantee according to users' specifications in the presence of active competing traffic.
 
 \end{abstract}

@@ -78,15 +78,22 @@ performance. \todo{explain the parameters with a concrete example}
 
 \subsection{Control Module}
 
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.5\textwidth]{assign_queue}
+  \caption{}
+  \label{fig:assign_queue}
+\end{figure}
+
 The control module is the core of QoSManager. The goal of the control module is to assign an appropriate rate to each flow so that
 QoS of high priority applications can be effectively enforced. However, existing home routers do not support per-flow rate control
 and even the Open vSwitch (OVS) does not yet support per-flow QoS described in OpenFlow 1.3 specification\todo{citation}. To overcome this limitation,
 QosManager enables per-flow rate control by creating a list of queues with different sending rates at the ports of the shared link
-\footnote{Here we assume that all the flows share a single link as shown in ~\reffig{setup}}. Specifically, suppose the link capacity
-of the share link is \emph{C}, for each distinct bandwidth \emph{B} in the QoS configuration file, we create $ N = \lfloor C / B \rfloor $
-queues with minimal rate B and maximal rate C. In addition, we create a special queue $q_0$ only with maximal rate C. At runtime,
-QoSManager will assign each flow to a queue with an appropriate rate to control the rate of the flow. Any flow that can not be guaranteed
-any level of QoS, it will be directly assgined to $q_0$
+\footnote{Here we assume that all the flows share a single link as shown in ~\reffig{setup}}. As shown in \reffig{assign_queue},
+suppose the link capacity of the share link is \emph{C}, for each distinct bandwidth \emph{B} in the QoS configuration file,
+we create $ N = \lfloor C / B \rfloor $ queues with minimal rate B and maximal rate C. In addition, we create a special queue $q_0$
+only with maximal rate C. At runtime, QoSManager will assign each flow to a queue with an appropriate rate to control the rate of the
+flow. Any flow that can not be guaranteed any level of QoS, it will be directly assgined to $q_0$.
 
 To achieve the goal of the control module, we define the QoS utility funcition (\refsect{qosUF}) and propose a queue assignment
 algorithm (\refsect{queueAssignAlgo}) to maximize the function under the limited link capacity.
@@ -97,12 +104,12 @@ If the total bandwidth required by all the flows through a link exceeds the link
 all the flows can not be fully satisfied and we need to somehow prioritize the applications' traffic flows. In order to quantify the QoS
 requirements satisfied, we assign a score to each flow. The score function for a flow \emph{f} is defined as:
 \begin{equation}
-\scalebox{0.8}{
+\scalebox{0.9}{
   $score(f) =
     \begin{cases}
-      priority       & \quad \text{if } bandwidth(f) = \text{ recommended}\\
-      0.6 * priority & \quad \text{if } bandwidth(f) = \text{ minimum}\\
-      0              & \quad \text{if } f \text{ can not be guaranteed QoS}\\
+      priority       & \quad \text{if } bw(f) = \text{ recommended}\\
+      0.6 * priority & \quad \text{if } bw(f) = \text{ minimum}\\
+      0              & \quad \text{if } \text{otherwise}\\
     \end{cases}$
 }
 \end{equation}
@@ -113,22 +120,44 @@ We directly use priorty as score. Therefore, higher priority application flow wi
 function, the goal is to maximize the QoS utility function given a shared link with the capacity \emph{C}:
 
 \begin{equation}
-\scalebox{0.8}{
-  $ U_{QoS} = \sum_{i=1}^{n} score(f_i) \quad \text{under } \sum_{i=1}^{n} bandwidth(f_i) \leq C $
-}
+\begin{split}
+  U_{QoS} = \sum_{i=1}^{n} score(f_i) \\ 
+  \text{under } \sum_{i=1}^{n} bandwidth(f_i) \leq C
+\end{split}
 \end{equation}
 
-It is clear that high priority application flows are more likely to be assigned recommend bandwidth \emph{all the time} and the QoS of low
+It is clear that high priority application flows are more likely to be assigned their recommend bandwidth \emph{all the time} and the QoS of low
 priority flows may be sacrificed. Moreover, the bandwidth allocated to high priority application will not be affected by new low priority flows
 going through the link. It is possible that the total score of some lower priority flows is greater than the score of a high priority flow and
 they cost less bandwidth. In that case, the bandwidth allocated to the high priority flow will be degraded. However, users can always tune the
 priority at runtime to avoid this problem.
 
-\subsubsection{Dynamic queue assignment algorithm}
+\subsubsection{Queue Assignment Algorithm}
 \label{sect:queueAssignAlgo}
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.5\textwidth]{assign_queue}
-\caption{}
-\label{fig:assign_queue}
-\end{figure}
+
+The optimization of the QoS utility function is very similar to the Knapsack problem \todo{citation} which can be effectively solved by dynamic
+programming. However, our problem differs form the canonical bounded knapsack problem in two ways. First, in our settings, an "object" (flow) has
+two "values" (full and partial score) and two corresponding "volumes" (recommended and minimal bandwidth). You can only choose one of them to put
+into the "knapsack" (shared link). Second, in order to avoid fluctuation, we want to keep a flow in the same queue as long as possible. That being
+said, when new objects come and we need to reorganize the knapsack, we want to keep as many old objects in the knapsack as possible. What's more,
+since the knapsack is usually much larger than the smallest object, it is not memory efficient to use the dynamic programming. Instead, we use
+DFS (~\refalg{queueAssignAlgo}) to solve the problem.
+
+\begin{algorithm}
+  \SetKwData{X}{x} \SetKwData{Timestamp}{timestamp} \SetKwData{Priority}{priority}
+  \SetKwFunction{Sort}{Sort}
+  \SetKwInOut{Input}{input}
+  \SetKwInOut{Output}{output}
+
+  \Input{A List $flowList$}
+  \Output{A Map $assign$}
+  
+  \Sort($flowList$, key=$\lambda$ \X: \X.\Timestamp)\;
+  \Sort($flowList$, key=$\lambda$ \X: \X.\Priority, reverse);
+
+
+
+  \caption{Queue Assignment Algorithm}\label{alg:queueAssignAlgo}
+\end{algorithm}
+
+The algorithm takes a list of flows \emph{flowList} and the shared link capacity \emph{C} as input. Here
