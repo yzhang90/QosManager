@@ -93,9 +93,9 @@ QosManager enables per-flow rate control by creating a list of queues with diffe
 suppose the link capacity of the share link is \emph{C}, for each distinct bandwidth \emph{B} in the QoS configuration file,
 we create $ N = \lfloor C / B \rfloor $ queues with minimal rate B and maximal rate C. In addition, we create a special queue $q_0$
 only with maximal rate C. At runtime, QoSManager will assign each flow to a queue with an appropriate rate to control the rate of the
-flow. Any flow that can not be guaranteed any level of QoS, it will be directly assgined to $q_0$.
+flow. Any flow that can not be guaranteed any level of QoS, it will be directly assigned to $q_0$.
 
-To achieve the goal of the control module, we define the QoS utility funcition (\refsect{qosUF}) and propose a queue assignment
+To achieve the goal of the control module, we define the QoS utility function (\refsect{qosUF}) and propose a queue assignment
 algorithm (\refsect{queueAssignAlgo}) to maximize the function under the limited link capacity.
 
 \subsubsection{QoS Utility Function}
@@ -116,7 +116,7 @@ requirements satisfied, we assign a score to each flow. The score function for a
 
 The score function basically says that if a flow can not be guaranteed any level of QoS, it gets 0 point. To distinguish between different
 levels of QoS, we give full score to a flow if it is given recommended bandwidth and partial score to a flow if it is given minimum bandwidth.
-We directly use priorty as score. Therefore, higher priority application flow will get higher score if it is satisfied. Based on the score
+We directly use priority as score. Therefore, higher priority application flow will get higher score if it is satisfied. Based on the score
 function, the goal is to maximize the QoS utility function given a shared link with the capacity \emph{C}:
 
 \begin{equation}
@@ -162,6 +162,6 @@ depth-first search (~\refalg{queueAssignAlgo}) to search for the optimal assignm
 
 The algorithm takes a list \emph{flowList} and the shared link capacity \emph{C} as input. The \emph{flowList} merges the tc\_table and the
 QoS configuration. We assume that all the flows in the \emph{flowList} are successfully classified by the traffic classification module. If a flow
-can not be recognized by the traffic classification module, it will be directly assigned to $q_0$. The alogrithm first sort the \emph{flowList} by
+can not be recognized by the traffic classification module, it will be directly assigned to $q_0$. The algorithm first sort the \emph{flowList} by
 timestamp and then by priority. Assume that the sorting algorithm is table, and then we will always pick the flows in a "first come first serve" manner
 if there are multiple flows of the same application type. Then the algorithm invokes depth-first search procedure to search for the optimal assignment.
