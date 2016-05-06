@@ -23,7 +23,7 @@ the main components in QosManager are: \todo{redraw the architecture. Can refer 
     format. Configuration module mainly handles the configuration file and passes the QoS requirements
     to the underlying three modules (traffic classification, forwarding and control, respectively).
   \item \emph{Traffic Classification Module}: The traffic classification module classifies the application
-    type for each flow. It maintains a lookup table \emph{tc\_table} where the key is the hash value of a
+    type for each flow. It maintains a lookup table \emph{tc\_table} where the key \emph{id} is the hash value of a
     flow's five-tuple (e.g.,source IP address, destination IP address, protocol, source port and destination port).
     The value is the application type for the flow. Each table entry is also associated with a timestamp indicating
     when the flow starts. In the current implementation, the classification is performed by querying a statically
@@ -141,7 +141,7 @@ two "values" (full and partial score) and two corresponding "volumes" (recommend
 into the "knapsack" (shared link). Second, in order to avoid fluctuation, we want to keep a flow in the same queue as long as possible. That being
 said, when new objects come and we need to reorganize the knapsack, we want to keep as many old objects in the knapsack as possible. What's more,
 since the knapsack is usually much larger than the smallest object, it is not memory efficient to use the dynamic programming. Instead, we use
-DFS (~\refalg{queueAssignAlgo}) to solve the problem.
+depth-first search (~\refalg{queueAssignAlgo}) to search for the optimal assignment.
 
 \begin{algorithm}
   \SetKwData{X}{x} \SetKwData{Timestamp}{timestamp} \SetKwData{Priority}{priority}
@@ -160,4 +160,8 @@ DFS (~\refalg{queueAssignAlgo}) to solve the problem.
   \caption{Queue Assignment Algorithm}\label{alg:queueAssignAlgo}
 \end{algorithm}
 
-The algorithm takes a list of flows \emph{flowList} and the shared link capacity \emph{C} as input. Here
+The algorithm takes a list \emph{flowList} and the shared link capacity \emph{C} as input. The \emph{flowList} merges the tc\_table and the
+QoS configuration. We assume that all the flows in the \emph{flowList} are successfully classified by the traffic classification module. If a flow
+can not be recognized by the traffic classification module, it will be directly assigned to $q_0$. The alogrithm first sort the \emph{flowList} by
+timestamp and then by priority. Assume that the sorting algorithm is table, and then we will always pick the flows in a "first come first serve" manner
+if there are multiple flows of the same application type. Then the algorithm invokes depth-first search procedure to search for the optimal assignment.
