@@ -1,8 +1,18 @@
 \section{Conclusion and Future work}
 \label{sect:future}
-For the future work, we plan to add more features to our system
-\begin{itemize}
-\item Multiple path routing
-\item Time-based QoS
-\item Different device QoS
-\end{itemize}
+
+In this paper, we have presented QoSManager, a configurable and adaptive QoS management framework
+based on SDN. Users specify high-level QoS policies through a web interface and QoSManager controller
+will dynamically assign each flow to a queue with an appropriate rate. We take into account the fact
+that an application may have different levels of QoS requirements in different scenarios and provide
+users with great flexibility to define their policies. In the experiment, we have demonstrated that
+the shared bandwidth is allocated in the way that the QoS of high priority applications are effectively
+enforced.
+
+We focused on the control module in this paper and left other modules in the framework quite simple.
+The next step in our work is to improve these modules. For instance, the traffic classification module
+uses a statically defined database to perform the classification. We plan to adopt machine learning\todo{citation}
+approach to perform more sophisticated classification. The forwarding module now simply implements a L2
+switch. We are thinking of introducing QoS based routing\todo{citation} into the module. In addition, we
+are planning to provide more flexibility for users to define the QoS policy like time based QoS and device
+based QoS.

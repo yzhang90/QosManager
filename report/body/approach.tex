@@ -19,8 +19,8 @@ the main components in QosManager are: \todo{redraw the architecture. Can refer 
   \item \emph{Web Portal}: The web portal provides an interface for users to set QoS parameters for
     different types of traffic. In addition, users could also view the real time statistical information
     about the traffic flows from the web portal.
-  \item \emph{Configuration Module}: The QoS requirements are stored in a QoS configuration file in YAML
-    format. Configuration module mainly handles the configuration file and passes the QoS requirements
+  \item \emph{Configuration Module}: The QoS policies are stored in a QoS configuration file in YAML
+    format. Configuration module mainly handles the configuration file and passes the QoS policies
     to the underlying three modules (traffic classification, forwarding and control, respectively).
   \item \emph{Traffic Classification Module}: The traffic classification module classifies the application
     type for each flow. It maintains a lookup table \emph{tc\_table} where the key \emph{id} is the hash value of a
@@ -32,7 +32,7 @@ the main components in QosManager are: \todo{redraw the architecture. Can refer 
     to which port the packet should be sent). Currently, we implement a simple L2 switch. The more sophisticated
     forwarding module is discussed in \refsect{future}.
   \item \emph{Control Module}: The control module is the core of QosManger. It dynamically computes the
-    assignments of flows to queues with appropriate sending rates based on the Qos requirements, the global
+    assignments of flows to queues with appropriate sending rates based on the Qos policies, the global
     information about the flows in the network.
   \item \emph{Traffic Monitor Module}: The traffic monitor module monitors the traffic flows in the network
     and constantly reports the flow status information and the port status information to the web portal.
@@ -51,10 +51,10 @@ QoSManager. QosManager then invokes the control module to recompute the assignme
 messages. Note that a flow added or removed may affect the assignments of multiple flows and thus multiple
 \textsf{FlowMod} messages will be sent to the switch.\todo{Add outline for subsections} 
 
-\subsection{QoS Parameters}
-\label{sect:qosParams}
+\subsection{QoS Policy}
+\label{sect:qosPolicy}
 
-An entry in a QoS configuration is defined as:
+An entry in a QoS policy configuration is defined as:
 
 \begin{lstlisting}[basicstyle=\sffamily]
 <application_type>:
@@ -86,11 +86,11 @@ performance. \todo{explain the parameters with a concrete example}
 \end{figure}
 
 The control module is the core of QoSManager. The goal of the control module is to assign an appropriate rate to each flow so that
-QoS of high priority applications can be effectively enforced. However, existing home routers do not support per-flow rate control
-and even the Open vSwitch (OVS) does not yet support per-flow QoS described in OpenFlow 1.3 specification\todo{citation}. To overcome this limitation,
-QosManager enables per-flow rate control by creating a list of queues with different sending rates at the ports of the shared link
-\footnote{Here we assume that all the flows share a single link as shown in ~\reffig{setup}}. As shown in \reffig{assign_queue},
-suppose the link capacity of the share link is \emph{C}, for each distinct bandwidth \emph{B} in the QoS configuration file,
+the QoS of high priority applications can be effectively enforced. However, existing home routers do not support per-flow rate control
+and even the Open vSwitch (OVS) does not yet support per-flow QoS described in OpenFlow 1.3 specification\todo{citation}. To overcome
+this limitation, QosManager enables per-flow rate control by creating a list of queues with different sending rates at the ports of
+the shared link \footnote{Here we assume that all the flows share a single link as shown in ~\reffig{setup}}. As shown in \reffig{assign_queue},
+suppose the link capacity of the share link is \emph{C}, for each distinct bandwidth \emph{B} in the QoS policy configuration file,
 we create $ N = \lfloor C / B \rfloor $ queues with minimal rate B and maximal rate C. In addition, we create a special queue $q_0$
 only with maximal rate C. At runtime, QoSManager will assign each flow to a queue with an appropriate rate to control the rate of the
 flow. Any flow that can not be guaranteed any level of QoS, it will be directly assigned to $q_0$.
@@ -146,7 +146,6 @@ depth-first search (~\refalg{queueAssignAlgo}) to search for the optimal assignm
 \begin{algorithm}[htp]
   \SetAlgoLined
   \SetKwFunction{algo}{algo}\SetKwFunction{proc}{dfs}
-  \SetKwData{X}{x} \SetKwData{Timestamp}{timestamp} \SetKwData{Priority}{priority}
   \SetKwFunction{Sort}{Sort}
   \SetKwInOut{Input}{input}
   \SetKwInOut{Output}{output}
@@ -155,10 +154,10 @@ depth-first search (~\refalg{queueAssignAlgo}) to search for the optimal assignm
   \Input{A List $flowList$}
   \Output{A Map $assign$}
   
-  \Sort($flowList$, key=$\lambda$ \X: \X.\Timestamp)\;
-  \Sort($flowList$, key=$\lambda$ \X: \X.\Priority, reverse)\;
-  $best\_score = 0$ \;
-  $N = flowList.length$ \;
+  $flowList$ $\leftarrow$ \Sort($flowList$, key='timestamp')\;
+  $flowList$ $\leftarrow$ \Sort($flowList$, key='priority', reverse)\;
+  $best\_score \leftarrow 0$ \;
+  $N \leftarrow flowList.length$ \;
   $dfs(0, 0, 0, newList())$ \;
   \setcounter{AlgoLine}{0}
   \SetKwProg{myproc}{Procedure}{}{}
@@ -166,8 +165,8 @@ depth-first search (~\refalg{queueAssignAlgo}) to search for the optimal assignm
 
   \uIf{ $index > N$ }{
     \uIf{$score > best\_score$}{
-        $best\_score = score $\;
-        $assign = temp\_assig$ \;
+        $best\_score \leftarrow score $\;
+        $assign \leftarrow temp\_assign$ \;
     }
   }
   $f = flowList[index] $\;
@@ -183,12 +182,14 @@ depth-first search (~\refalg{queueAssignAlgo}) to search for the optimal assignm
   }
   $dfs(index+1, score, bw, temp\_assign)$ \;
   }
-  \caption{Algorithm with procedure}
+  \caption{Queue Assignment Algorithm}
+  \label{alg:queueAssignAlgo}
 \end{algorithm} 
 
 
 The algorithm takes a list \emph{flowList} and the shared link capacity \emph{C} as input. The \emph{flowList} merges the tc\_table and the
-QoS configuration. We assume that all the flows in the \emph{flowList} are successfully classified by the traffic classification module. If a flow
-can not be recognized by the traffic classification module, it will be directly assigned to $q_0$. The algorithm first sort the \emph{flowList} by
-timestamp and then by priority. Assume that the sorting algorithm is table, and then we will always pick the flows in a "first come first serve" manner
-if there are multiple flows of the same application type. Then the algorithm invokes depth-first search procedure to search for the optimal assignment.
+QoS policy configuration. We assume that all the flows in the \emph{flowList} are successfully classified by the traffic classification module.
+If a flow can not be recognized by the traffic classification module, it will be directly assigned to $q_0$. The algorithm first sort the
+\emph{flowList} by timestamp and then by priority. Assume that the sorting algorithm is table, and then we will always pick the flows in a
+"first come first serve" manner if there are multiple flows of the same application type. Then the algorithm invokes depth-first search procedure
+to search for the optimal assignment.
