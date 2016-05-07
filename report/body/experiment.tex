@@ -3,38 +3,115 @@
 We now present the evaluation of our system. 
 
 \subsection{Experiment Setup}
-Our experiments are done on a desktop PC with Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz, 16GB RAM. The network scenario is emulated using the Mininet~\cite{mininet} framework.
+Our experiments are done on a desktop PC with Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz and 8GB RAM. The network scenario is emulated using the Mininet~\cite{mininet} framework.
 It uses OS features to instantiate lightweight virtualisation of network hosts, and interconnects them with virtual switches, according to a specified topology configuration.
 We implemented the control application on top of Ryu~\cite{ryu}, an open-source SDN controller.
 
-\reffig{setup} shows the experiment setup. We configuraed an Internext connection to be 15 Mbps.
+\reffig{setup} shows our experiment setup. We configured an Internext connection to be 8 Mbps.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.5\textwidth]{exp_setup}
-\caption{}
+\caption{Experiment setup.}
 \label{fig:setup}
 \end{figure}
 
-During the experiments, hosts request different service, such as watching a video or making a VoIP call, depending on the experiment. 
+During the experiments, different hosts request different services, such as watching a video, making a VoIP call or playing a game, depending on the experiment.The QoS requirements configured for these services are shown in \reftable{qos_config}. 
 
-We now show our system imporve the QoS of services in the face of competing traffic.
+\begin{table}[htb]
+\scriptsize
+\caption{Qos Configuration}
+\begin{tabular}{|l|l|l|l|}
+\hline Service type & Minimum bandwidth & Recommended bandwitdh & Priority \\
+\hline
+\hline VoIP & 400Kbps & 1.2Mbps & 10 \\
+\hline Video & 2.5Mbps & 5Mbps & 8  \\
+\hline Game & 1.5Mbps & 3Mbps & 6  \\
+\hline
+\end{tabular}
+\label{table:qos_config}
+\end{table}
+
+We now show our system imporves the QoS of services in the face of competing traffic.
 \subsubsection{Scenario 1}
-In this scenario, one host is watching videos and the other host is downloading a file. And the priority of video is configured to be higher than file downloading. We generate traffic for the two services at the same time.
+In this scenario, two hosts are watching videos and one host is making a VoIP call.
+The video data is sending to the hosts at rate of 5Mbps, and the VoIP data is sending to the host at rate of 1.2Mbps.
+The three hosts are using the network at the same time.  
 
-Figure illustrates the bitrates of the two services with our system, and Figure shows the bitrates of the two services withour our system. 
+\reffig{s1_qos} illustrates the bitrates of the three services with our system, and \reffig{s1_no_qos} shows the bitrates of the three services without our system. 
 
-The results show that our system allows the system to quickly converge to a higher bitrate than it otherwise would without FlowQoS enabled. This prevents
-bitrate oscillations and ensures the stability of the video player in terms of requested bitrates and video quality.
-Thus, our system improves the quality of the adaptive streaming video by both reducing bitrate oscillation and achieving a higher overall bitrate.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.32\textwidth,angle=270]{s1_qos}
+\caption{Bitrates of services in scenario1 with QoS.}
+\label{fig:s1_qos}
+\end{figure}
+
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.32\textwidth,angle=270]{s1_no_qos}
+\caption{Bitrates of services in scenario1 without QoS.}
+\label{fig:s1_no_qos}
+\end{figure}
+
+The results show that our system provides recommended bandwidth for the VoIP flow as VoIP has higher priority than Video. 
+Our system also provides recommended bandwidth for one of the video flow. While without QoS, none of three services achieve recommended bandwidth.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.35\textwidth,angle=270]{s1_loss}
+\caption{Comparison of packets loss for VoIP with and without QoS.}
+\label{fig:s1_loss}
+\end{figure}
+
+\reffig{s1_loss} shows the packet loss rate for the VoIP flow with and without QoS. As our system provides recommended bandwidth for VoIP, there is no packet loss. Without QoS, the packet loss rate is about 50 percent. Our system greatly improves the quality of VoIP call when there is competing network.
+
+Thus, our system improves QoS of user perferred services and also reduces bitrate oscillation. 
 
 \subsubsection{Scenario 2}
-The setting of this scenarios is the same as last one. But we generate traffic for file downloading first, then generate traffic for video, then we stop traffic for vidoe to see how the file downloading rate change.
+In this scenario, one host starts watching video which lasts 500s. After 50s, another host starts play a game which lasts 400s. After another 50s, another host starts another game which lasts 300s.
+The video data is sending to the host at rate of 5Mbps, and the game data is sending to the hosts at rate of 3Mbps.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.32\textwidth,angle=270]{s2_qos}
+\caption{Bitrates of services in scenario2 with QoS.}
+\label{fig:s2_qos}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.32\textwidth,angle=270]{s2_no_qos}
+\caption{Bitrates of services in scenario2 without QoS.}
+\label{fig:s2_no_qos}
+\end{figure}
+
+\reffig{s2_qos} illustrates the bitrates of the three services with our system, and \reffig{s2_no_qos} shows the bitrates of the three services without our system. 
+With our system, as the priority of video is higher than game. The bandwidth of vidoe is not affected by the incomming game flows. Our system also provides recommended bandwidth for the first joined game flow.
+Without QoS, the bandwidth of both the video and the first joined game is reduced when the second game flow comes. Also, none of the three services acheive recommended bandwidth.
+
+Thus, in our system, services with higher priority will not be affected by services with lower priority.
 
 \subsubsection{Scenario 3}
-We also evaluated our system in the context of VoIP application traffic. VoIP is sensitive to delay and variation in packet arrival times, so lower jitter is essential for good performance. We monitor the packet delay and jitter of the
-VoIP application using ping and iperf to monitor the RTT and the packet arrival times throughout the experiment.
+In this scenario, two hosts are play games. After 50s, another host starts watching a video which lasts 400s. After another 50s, another host starts making a VoIP call which lasts 300s.
 
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.35\textwidth,angle=270]{s3_qos}
+\caption{Bitrates of services in scenario3 with QoS.}
+\label{fig:s3_qos}
+\end{figure}
 
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.35\textwidth,angle=270]{s3_no_qos}
+\caption{Bitrates of services in scenario3 without QoS.}
+\label{fig:s3_no_qos}
+\end{figure}
 
+\reffig{s3_qos} illustrates the bitrates of the four services with our system, and \reffig{s3_no_qos} shows the bitrates of the four services without our system. 
+With our system, when the video flow comes in, as the priority of video is higher than game, our system reduces bandwidth of one game and provides reommended bandwidth for the video. When the VoIP flow comes in, our system again sacrifices the bandwidth of the other game to provide recommended bandwidth for VoIP as VoIP has the highest priority. When the VoIP flow ends, our system dynamically adjust bandwidth allocation, and uses the bandwidth to provide better quality for one the game.
+While without QoS, when the video flow comes in, the bandwidth of both the game flows are reduced. When the VoIP flow comes in, all the bandwidth of video and games are reduced. None of the services has ever achieved recommended bandwidth.
 
+Thus, our system will sacrifice bandwidth of service with lower priority to serve services with higher priority to satisfy the QoS requirements of user.
