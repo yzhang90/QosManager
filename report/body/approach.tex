@@ -143,22 +143,49 @@ said, when new objects come and we need to reorganize the knapsack, we want to k
 since the knapsack is usually much larger than the smallest object, it is not memory efficient to use the dynamic programming. Instead, we use
 depth-first search (~\refalg{queueAssignAlgo}) to search for the optimal assignment.
 
-\begin{algorithm}
+\begin{algorithm}[htp]
+  \SetAlgoLined
+  \SetKwFunction{algo}{algo}\SetKwFunction{proc}{dfs}
   \SetKwData{X}{x} \SetKwData{Timestamp}{timestamp} \SetKwData{Priority}{priority}
   \SetKwFunction{Sort}{Sort}
   \SetKwInOut{Input}{input}
   \SetKwInOut{Output}{output}
-
+  \SetKwProg{myalg}{Algorithm}{}{}
+  \scriptsize
   \Input{A List $flowList$}
   \Output{A Map $assign$}
   
   \Sort($flowList$, key=$\lambda$ \X: \X.\Timestamp)\;
-  \Sort($flowList$, key=$\lambda$ \X: \X.\Priority, reverse);
+  \Sort($flowList$, key=$\lambda$ \X: \X.\Priority, reverse)\;
+  $best\_score = 0$ \;
+  $N = flowList.length$ \;
+  $dfs(0, 0, 0, newList())$ \;
+  \setcounter{AlgoLine}{0}
+  \SetKwProg{myproc}{Procedure}{}{}
+  \myproc{\proc{index, score, bw, temp\_assign}}{
 
+  \uIf{ $index > N$ }{
+    \uIf{$score > best\_score$}{
+        $best\_score = score $\;
+        $assign = temp\_assig$ \;
+    }
+  }
+  $f = flowList[index] $\;
+  \uIf{ $bw + f.recommend < C$ }{
+    $temp\_assign.append(f.id, f.recommend) $\;
+    $dfs(index+1, score+f.priority, bw+f.recommend, temp\_assign)$ \;
+    $temp\_assign.removeLast()$ \;
+  }
+  \uIf{ $bw + f.minimum < C$ }{
+    $temp\_assign.append(f.id, f.minimum)$ \;
+    $dfs(index+1, score+f.priority*0.6, bw+f.recommend, temp\_assign)$ \;
+    $temp\_assign.removeLast()$ \;
+  }
+  $dfs(index+1, score, bw, temp\_assign)$ \;
+  }
+  \caption{Algorithm with procedure}
+\end{algorithm} 
 
-
-  \caption{Queue Assignment Algorithm}\label{alg:queueAssignAlgo}
-\end{algorithm}
 
 The algorithm takes a list \emph{flowList} and the shared link capacity \emph{C} as input. The \emph{flowList} merges the tc\_table and the
 QoS configuration. We assume that all the flows in the \emph{flowList} are successfully classified by the traffic classification module. If a flow
