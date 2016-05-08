@@ -5,7 +5,7 @@ There are various QoS techniques \todo{citations} proposed in literatures. We cl
 categories: \textbf{traditional QoS strategies} which were proposed before the introduction of SDN and
 \textbf{SDN enabled technologies}.
 
-\emph{Integrated services}\todo{citations} (IntServ) and \emph{Differentiated services}\todo{citations} (DiffServ)
+\emph{Integrated services}(IntServ)~\cite{IntServ} and \emph{Differentiated services} (DiffServ)~\cite{DiffServ}
 are two main types in traditional QoS strategies. IntServ is a fine-grained and per-flow traffic control architecture.
 The idea is that every network element (e.g., router, switch) in the system has to individually reserve resources for
 \emph{each} flow. Thus, IntServ is not scalable. On the other hand, DiffServ is a coarse-grained traffic control
@@ -21,7 +21,7 @@ of the forwarding devices. Moreover, the set of policies and the number of traff
 fine-grained tuning based on the needs of the user. Our work falls into this category and focuses on providing a easy to deploy
 and configure framework for per-flow, application-based QoS management in home networks.
 
-FlowQos\todo{citations} is a framework that utilizes SDN to reconfigure home routers according to a set of rate shaping
+FlowQos~\cite{Seddiki_HotSDN14} is a framework that utilizes SDN to reconfigure home routers according to a set of rate shaping
 policies defined by the user. FlowQoS and our approach share the same idea of virtual slice the network bandwidth. However,
 our approach differs from FlowQoS in several ways. First, FlowQoS focuses on light weight traffic classification. To enforce
 the rate shaping, FlowQoS introduces two "virtual" switches inside the home router and each virtual link between two switches 
@@ -30,8 +30,8 @@ the same virtual link and the aggregated bandwidth of an application type is def
 on the assignment of an appropriate rate to each flow to maximize the QoS requirements satisfied. The bandwidth allocation of each
 flow is determined dynamically and thus our framework provides more fine-grained control. In addition, we have introduced different
 levels of QoS for an application type so that users have more flexibility to define their policies. Ko et al. proposed a two-tier
-flow-based QoS management framework\todo{citations} that separate flow table to three different tables: flow state table, forwarding
+flow-based QoS management framework~\cite{Ko_IEICE13} that separate flow table to three different tables: flow state table, forwarding
 rule table and QoS rule table where micro-flows can share a single QoS profile. Their system requires multicore processors and is
-not designed for home networks. OpenQoS\todo{citations} proposed a novel controller design for QoS routing where the routes of
+not designed for home networks. OpenQoS~\cite{Egilmez_ASPIPA12} proposed a novel controller design for QoS routing where the routes of
 multimedia traffic are optimized dynamically to fulfill the required QoS. Our approach focuses on ports instead of routes and therefore
 is orthogonal to their method.

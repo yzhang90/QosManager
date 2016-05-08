@@ -83,7 +83,7 @@ satisfy the Qos requirements for VoIP services.
 
 The control module is the core of QoSManager. The goal of the control module is to assign an appropriate rate to each flow so that
 the QoS of high priority applications can be effectively enforced. However, existing home routers do not support per-flow rate control
-and even the Open vSwitch (OVS) does not yet support per-flow QoS described in OpenFlow 1.3 specification\todo{citation}. To overcome
+and even the Open vSwitch (OVS) does not yet support per-flow QoS described in OpenFlow 1.3 specification~\cite{openflow13}. To overcome
 this limitation, QosManager enables per-flow rate control by creating a list of queues with different sending rates at the ports of
 the shared link \footnote{Here we assume that all the flows share a single link as shown in ~\reffig{setup}}. As shown in \reffig{assign_queue},
 suppose the link capacity of the share link is \emph{C}, for each distinct bandwidth \emph{B} in the QoS policy configuration file,
@@ -131,7 +131,7 @@ priority at runtime to avoid this problem.
 \subsubsection{Queue Assignment Algorithm}
 \label{sect:queueAssignAlgo}
 
-The optimization of the QoS utility function is very similar to the Knapsack problem \todo{citation} which can be effectively solved by dynamic
+The optimization of the QoS utility function is very similar to the Knapsack problem~\cite{knapsack} which can be effectively solved by dynamic
 programming. However, our problem differs form the canonical bounded knapsack problem in two ways. First, in our settings, an "object" (flow) has
 two "values" (full and partial score) and two corresponding "volumes" (recommended and minimal bandwidth). You can only choose one of them to put
 into the "knapsack" (shared link). Second, in order to avoid fluctuation, we want to keep a flow in the same queue as long as possible. That being
