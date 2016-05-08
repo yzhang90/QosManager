@@ -32,13 +32,13 @@ the main components in QosManager are: \todo{redraw the architecture. Can refer 
     to which port the packet should be sent). Currently, we implement a simple L2 switch. The more sophisticated
     forwarding module is discussed in \refsect{future}.
   \item \emph{Control Module}: The control module is the core of QosManger. It dynamically computes the
-    assignments of flows to queues with appropriate sending rates based on the Qos policies, the global
+    assignments of flows to queues with appropriate sending rates based on the QoS policies, the global
     information about the flows in the network.
   \item \emph{Traffic Monitor Module}: The traffic monitor module monitors the traffic flows in the network
     and constantly reports the flow status information and the port status information to the web portal.
 \end{itemize}
 
-When the first packet of a flow arrives at a switch, it does not match any entries in the flow table(s) and
+When the first packet of a flow arrives at a switch, it does not match any entries in the flow table(s), and
 it is forwarded to the controller. The Ryu SDN controller receives a \textsf{PacketIn} event and passes the
 packet to QoSManager. QosManager calls the traffic classification module to classify the application type for
 the flow and stores the result with a timestamp in a lookup table \emph{tc\_table}. QoSManager then invokes
@@ -68,9 +68,9 @@ parameter specifies the users' preference for the application. The higher the va
 application is. We noticed that applications such as video streaming usually have different levels of QoS. Thus, we introduce two
 parameters instead of one parameter to specify the requirement for an application. The \emph{minimum} parameter specifies
 the minimum bandwidth the application requires. The \emph{recommended} parameter specifies the desired bandwidth for best
-performance. For example, as shown in \reftable{qos_config}, the minimum bandwidwith required by VoIP is 400Kbps and the recommended
+performance. For example, as shown in \reftable{qos_config}, the minimum bandwidth required by VoIP is 400Kbps and the recommended
 bandwidth is 1.2Mpbs. The priority of VoIP, which is 10, is higher than any other types of services, so QoSManager will first try to
-satisfy the Qos requirements for VoIP services.
+satisfy the QoS requirements for VoIP services.
 
 \subsection{Control Module}
 
@@ -82,7 +82,7 @@ satisfy the Qos requirements for VoIP services.
 \end{figure}
 
 The control module is the core of QoSManager. The goal of the control module is to assign an appropriate rate to each flow so that
-the QoS of high priority applications can be effectively enforced. However, existing home routers do not support per-flow rate control
+the QoS of high priority applications can be effectively enforced. However, existing home routers do not support per-flow rate control,
 and even the Open vSwitch (OVS) does not yet support per-flow QoS described in OpenFlow 1.3 specification~\cite{openflow13}. To overcome
 this limitation, QosManager enables per-flow rate control by creating a list of queues with different sending rates at the ports of
 the shared link \footnote{Here we assume that all the flows share a single link as shown in ~\reffig{setup}}. As shown in \reffig{assign_queue},
@@ -97,14 +97,14 @@ algorithm (\refsect{queueAssignAlgo}) to maximize the function under the limited
 \subsubsection{QoS Utility Function}
 \label{sect:qosUF}
 If the total bandwidth required by all the flows through a link exceeds the link capacity, it is obvious that the QoS requirements for
-all the flows can not be fully satisfied and we need to somehow prioritize the applications' traffic flows. In order to quantify the QoS
+all the flows can not be fully satisfied, and we need to somehow prioritize the applications' traffic flows. In order to quantify the QoS
 requirements satisfied, we assign a score to each flow. The score function for a flow \emph{f} is defined as:
 \begin{equation}
 \scalebox{0.9}{
   $score(f) =
     \begin{cases}
       priority       & \quad \text{if } bw(f) = \text{ recommended}\\
-      0.6 * priority & \quad \text{if } bw(f) = \text{ minimum}\\
+      0.5 \times priority & \quad \text{if } bw(f) = \text{ minimum}\\
       0              & \quad \text{if } \text{otherwise}\\
     \end{cases}$
 }
@@ -122,9 +122,9 @@ function, the goal is to maximize the QoS utility function given a shared link w
 \end{split}
 \end{equation}
 
-It is clear that high priority application flows are more likely to be assigned their recommend bandwidth \emph{all the time} and the QoS of low
+It is clear that high priority application flows are more likely to be assigned their recommend bandwidth \emph{all the time}, and the QoS of low
 priority flows may be sacrificed. Moreover, the bandwidth allocated to high priority application will not be affected by new low priority flows
-going through the link. It is possible that the total score of some lower priority flows is greater than the score of a high priority flow and
+going through the link. It is possible that the total score of some lower priority flows is greater than the score of a high priority flow, and
 they cost less bandwidth. In that case, the bandwidth allocated to the high priority flow will be degraded. However, users can always tune the
 priority at runtime to avoid this problem.
 
@@ -135,7 +135,7 @@ The optimization of the QoS utility function is very similar to the Knapsack pro
 programming. However, our problem differs form the canonical bounded knapsack problem in two ways. First, in our settings, an "object" (flow) has
 two "values" (full and partial score) and two corresponding "volumes" (recommended and minimal bandwidth). You can only choose one of them to put
 into the "knapsack" (shared link). Second, in order to avoid fluctuation, we want to keep a flow in the same queue as long as possible. That being
-said, when new objects come and we need to reorganize the knapsack, we want to keep as many old objects in the knapsack as possible. What's more,
+said, when new objects come, and we need to reorganize the knapsack, we want to keep as many old objects in the knapsack as possible. What's more,
 since the knapsack is usually much larger than the smallest object, it is not memory efficient to use the dynamic programming. Instead, we use
 depth-first search (~\refalg{queueAssignAlgo}) to search for the optimal assignment.
 
@@ -173,7 +173,7 @@ depth-first search (~\refalg{queueAssignAlgo}) to search for the optimal assignm
   }
   \uIf{ $bw + f.minimum < C$ }{
     $temp\_assign.append(f.id, f.minimum)$ \;
-    $dfs(index+1, score+f.priority*0.6, bw+f.recommend, temp\_assign)$ \;
+    $dfs(index+1, score+f.priority*0.5, bw+f.recommend, temp\_assign)$ \;
     $temp\_assign.removeLast()$ \;
   }
   $dfs(index+1, score, bw, temp\_assign)$ \;
