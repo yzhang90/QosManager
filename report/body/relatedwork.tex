@@ -26,8 +26,8 @@ policies defined by the user. FlowQoS and our approach share the same idea of vi
 our approach differs from FlowQoS in several ways. First, FlowQoS focuses on light weight traffic classification. To enforce
 the rate shaping, FlowQoS introduces two "virtual" switches inside the home router and each virtual link between two switches 
 corresponds to a different application group. After traffic classification, flows of the same application type are forwarded to
-the same virtual link and the aggregated bandwidth of an application type is defined by the user. However, our approach focues
-on the assignment of an approriate rate to each flow to maximize the QoS requirements satisfied. The bandwidth allocaiion of each
+the same virtual link and the aggregated bandwidth of an application type is defined by the user. However, our approach focuses
+on the assignment of an appropriate rate to each flow to maximize the QoS requirements satisfied. The bandwidth allocation of each
 flow is determined dynamically and thus our framework provides more fine-grained control. In addition, we have introduced different
 levels of QoS for an application type so that users have more flexibility to define their policies. Ko et al. proposed a two-tier
 flow-based QoS management framework\todo{citations} that separate flow table to three different tables: flow state table, forwarding
