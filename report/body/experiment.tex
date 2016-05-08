@@ -1,13 +1,13 @@
 \section{Evaluation}
-\label{sect:experiment}
-We now present the evaluation of our system. 
+\label{sect:experiment} 
 
 \subsection{Experiment Setup}
-Our experiments are done on a desktop PC with Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz and 8GB RAM. The network scenario is emulated using the Mininet~\cite{mininet} framework.
-It uses OS features to instantiate lightweight virtualisation of network hosts, and interconnects them with virtual switches, according to a specified topology configuration.
-We implemented the control application on top of Ryu~\cite{ryu}, an open-source SDN controller.
+We evaluated QoSManager on a desktop PC with Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz and 8GB RAM. We used Mininet~\cite{mininet} with Open vSwitch~\cite{openvswitch} to emulate
+different network scenarios. Mininet uses OS features to instantiate lightweight virtualization of network hosts and interconnects them with virtual switches, according to a
+specified topology configuration. Open vSwitch is a software implementation of a virtual multilayer network switch. QoSManager was implemented on top of Ryu~\cite{ryu}, an
+open-source SDN controller.
 
-\reffig{setup} shows our experiment setup. We configured an Internext connection to be 8 Mbps.
+\reffig{setup} shows our experiment setup. There are two switches connected with a 8Mbps link.
 
 \begin{figure}[htb]
 \centering
@@ -16,13 +16,14 @@ We implemented the control application on top of Ryu~\cite{ryu}, an open-source 
 \label{fig:setup}
 \end{figure}
 
-During the experiments, different hosts request different services, such as watching a video, making a VoIP call or playing a game, depending on the experiment.The QoS requirements configured for these services are shown in \reftable{qos_config}. 
+During the experiments, different types of services, such as game, video and VoIP, sends traffic to the applications on the right. All the traffic flows through the link between
+the two switches and competes for the scarce bandwidth. The Qos requirements for the services are displayed in~\reftable{qos_config}.
 
 \begin{table}[htb]
 \scriptsize
 \caption{Qos Configuration}
 \begin{tabular}{|l|l|l|l|}
-\hline Service type & Minimum bandwidth & Recommended bandwitdh & Priority \\
+\hline Service type & Minimum bw & Recommended bw & Priority \\
 \hline
 \hline VoIP & 400Kbps & 1.2Mbps & 10 \\
 \hline Video & 2.5Mbps & 5Mbps & 8  \\
@@ -32,8 +33,10 @@ During the experiments, different hosts request different services, such as watc
 \label{table:qos_config}
 \end{table}
 
-We now show our system imporves the QoS of services in the face of competing traffic.
-\subsubsection{Scenario 1}
+We first investigate how QoSManager allocates bandwidth to high priority traffic and low priority traffic. Then, we study whether high priority traffic will be affected by
+new low priority flow coming into the network. Finally, we analyze whether high priority traffic can achieve the desired bandwidth fast in a congested network.
+
+\subsection{Question1: How does QoSManager allocate bandwidth?}
 In this scenario, two hosts are watching videos and one host is making a VoIP call.
 The video data is sending to the hosts at rate of 5Mbps, and the VoIP data is sending to the host at rate of 1.2Mbps.
 The three hosts are using the network at the same time.  
@@ -69,7 +72,7 @@ Our system also provides recommended bandwidth for one of the video flow. While 
 
 Thus, our system improves QoS of user perferred services and also reduces bitrate oscillation. 
 
-\subsubsection{Scenario 2}
+\subsection{Question 2: How is high priority traffic affected by low priority traffic?}
 In this scenario, one host starts watching video which lasts 500s. After 50s, another host starts play a game which lasts 400s. After another 50s, another host starts another game which lasts 300s.
 The video data is sending to the host at rate of 5Mbps, and the game data is sending to the hosts at rate of 3Mbps.
 

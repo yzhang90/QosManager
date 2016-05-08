@@ -12,7 +12,7 @@ an overview of the design and then describe the important components in detail.
 \label{fig:architecture}
 \end{figure}
 
-QosManager is implemented as an application on top of Ryu SDN controller. As depicted in \reffig{architecture},
+QosManager is implemented as an application on top of a SDN controller. As depicted in \reffig{architecture},
 the main components in QosManager are: \todo{redraw the architecture. Can refer to nmeta}
 
 \begin{itemize}
@@ -68,13 +68,9 @@ parameter specifies the users' preference for the application. The higher the va
 application is. We noticed that applications such as video streaming usually have different levels of QoS. Thus, we introduce two
 parameters instead of one parameter to specify the requirement for an application. The \emph{minimum} parameter specifies
 the minimum bandwidth the application requires. The \emph{recommended} parameter specifies the desired bandwidth for best
-performance. \todo{explain the parameters with a concrete example}
-%For example, in the figure, the minimum rate for video is 1.5M and the recommended rate for vidoe is 7M. The priority for video, which is 10, is much higher than other types of services. So our SDN controller will try to first satisfy the QoS requirements for the video services in the network.
-
-%\subsection{Flow classfier module}
-%As traffic classification is not the focus of our project, in our implementation, we use static flow classifer to classfity the traffic.
-%
-%It is very easy to extend our traffic classfication module to be more fine-grained and flexible. For example, we can easily integrate other approaches, such as DNS-based classifier~\cite{Seddiki_HotSDN14}, to our module. Or we can use the nmeta project~\cite{nmeta} as our traffic classification module.
+performance. For example, as shown in \reftable{qos_config}, the minimum bandwidwith required by VoIP is 400Kbps and the recommended
+bandwidth is 1.2Mpbs. The priority of VoIP, which is 10, is higher than any other types of services, so QoSManager will first try to
+satisfy the Qos requirements for VoIP services.
 
 \subsection{Control Module}
 

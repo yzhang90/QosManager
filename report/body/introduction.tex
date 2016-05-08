@@ -6,7 +6,7 @@ inspires and leads to a variety of online and real-time applications, like voice
 streaming, online interactive gaming, video conferencing, etc. These applications impose diverse Quality
 of Service (QoS) requirements on latency, bandwidth, jitter and error-rate. On the other hand, the
 underlying networks can not provide unlimited bandwidth. According to~\cite{akamai}, the average
-connection speed in the United States is 12.6Mbps. When users use multiple applications at the same time,
+connection speed in the United States is 14.2Mbps. When users use multiple applications at the same time,
 these applications compete for the relatively scarce bandwidth, thus leading to degradations of overall
 performance.
 
@@ -38,7 +38,7 @@ This paper presents several contributions. First, we design the specification la
 that the QoS requirement for an application may change in different scenarios. Second, we design and implement
 QoSManager, a configurable and adaptive QoS management framework using SDN support. Especially, we propose a novel
 algorithm to assign flows to queues with appropriate rates to effectively enforce QoS. Third, we demonstrate the
-effectiveness of QosManager by using Mininet~\cite{mininet} and D-ITG~\cite{d-itg}.
+effectiveness of QosManager by emulating different network scenarios.
 
 The rest of the paper proceeds as follows. 
 \refsect{related} presents related work in QoS, as well as SDN-based solutions
