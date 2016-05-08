@@ -4,7 +4,7 @@
 Communication networks nowadays have greatly improved the connectivity of the world. This connectivity
 inspires and leads to a variety of online and real-time applications, like voice over IP (VoIP), video
 streaming, online interactive gaming, video conferencing, etc. These applications impose diverse Quality
-of Service (QoS) requirements on latency, bandwidth, jitter and error-rate. On the other hand, the
+of Service (QoS) requirements on latency, bandwidth, jitter, and error-rate. On the other hand, the
 underlying networks can not provide unlimited bandwidth. According to~\cite{akamai}, the average
 connection speed in the United States is 14.2Mbps. When users use multiple applications at the same time,
 these applications compete for the relatively scarce bandwidth, thus leading to degradations of overall
@@ -41,10 +41,7 @@ algorithm to assign flows to queues with appropriate rates to effectively enforc
 effectiveness of QosManager by emulating different network scenarios.
 
 The rest of the paper proceeds as follows. 
-\refsect{related} presents related work in QoS, as well as SDN-based solutions
-for home and broadband access networks. 
-\refsect{qosmanager} describes the design of our system, as well as its implementation using Ryu and Open vSwitch.
-\refsect{experiment} evaluates
-our system in the
-context of competing flows. \refsect{future} discusses future work
+\refsect{related} presents the related work in QoS, including traditional QoS strategies and SDN enabled technologies.
+\refsect{qosmanager} describes the design of our approach, especially the dynamic queue assignment algorithm.
+\refsect{experiment} evaluates our approach in the context of competing flows. \refsect{future} discusses future work
 and concludes.
