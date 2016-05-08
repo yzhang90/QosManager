@@ -190,6 +190,6 @@ depth-first search (~\refalg{queueAssignAlgo}) to search for the optimal assignm
 The algorithm takes a list \emph{flowList} and the shared link capacity \emph{C} as input. The \emph{flowList} merges the tc\_table and the
 QoS policy configuration. We assume that all the flows in the \emph{flowList} are successfully classified by the traffic classification module.
 If a flow can not be recognized by the traffic classification module, it will be directly assigned to $q_0$. The algorithm first sort the
-\emph{flowList} by timestamp and then by priority. Assume that the sorting algorithm is table, and then we will always pick the flows in a
+\emph{flowList} by timestamp and then by priority. Suppose that the sorting algorithm is table, and we will always pick the flows in a
 "first come first serve" manner if there are multiple flows of the same application type. Then the algorithm invokes depth-first search procedure
 to search for the optimal assignment.
