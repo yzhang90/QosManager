@@ -8,6 +8,11 @@
 	howpublished = {\url{https://osrg.github.io/ryu/}},
 }
 
+@misc{yaml,
+  title = {{YAML: YAML Ain't Markup Language}},
+  howpublished = {\url{http://yaml.org/}},
+}
+
 @misc{openflow,
 	title = {OpenFlow},
 	howpublished = {\url{https://www.opennetworking.org/sdn-resources/openflow}},
@@ -15,7 +20,7 @@
 
 @misc{openflow13,
   title = {OpenFlow 1.3 specification},
-  howpublished = {\url{https://www.opennetworking.org/images/stories/downloads/sdn-resources/onf-specifications/openflow/openflow-spec-v1.3.0.pdf}},
+  howpublished = {\url{https://goo.gl/zFmjAT}},
 }
 
 @misc{iperf,
@@ -23,15 +28,23 @@
 	howpublished = {\url{https://iperf.fr/}},
 }
 
-@misc{IntServ,
-  title = {Integrated services},
-  howpublished = {\url{https://en.wikipedia.org/wiki/Integrated_services}},
-}
 
-@misc{DiffServ,
-	title = {Differentiated services},
-	howpublished = {\url{https://en.wikipedia.org/wiki/Differentiated_services}},
-}
+@rfc{IntServ,
+ author = {Braden, R. and Clark, D. and Shenker, S.},
+ title = {Integrated Services in the Internet Architecture: An Overview},
+ year = {1994},
+ publisher = {RFC Editor},
+ address = {United States},
+} 
+
+
+@rfc{DiffServ,
+ author = {Blake, S. and Black, D. and Carlson, M. and Davies, E. and Wang, Z. and Weiss, W.},
+ title = {An Architecture for Differentiated Service},
+ year = {1998},
+ publisher = {RFC Editor},
+ address = {United States},
+} 
 
 @misc{knapsack,
   title = {Knapsack problem},
@@ -48,14 +61,20 @@
   howpublished = {\url{http://openvswitch.org/}}
 }
 
-@misc{ml,
-  title = {Machine learning},
-  howpublished = {\url{https://en.wikipedia.org/wiki/Machine_learning}},
-}
 
 @misc{akamai,
   title = {{Q4 2015 State of the Internet Report}},
   howpublished = {\url{https://goo.gl/Tk7DJG}},
+}
+
+@misc{meraki,
+  title = {{Meraki Traffic Shaper}},
+  howpublished = {\url{http://goo.gl/IL24ek}},
+}
+
+@misc{PacketShaper,
+  title = {{PacketShaper}},
+  howpublished = {\url{http://www.bluecoat.com/products/packetshaper}},
 }
 
 
@@ -138,5 +157,125 @@
  numpages = {7},
  publisher = {IEEE Press},
 } 
+
+@article{Aurrecoechea_1998,
+ author = {Aurrecoechea, Cristina and Campbell, Andrew T. and Hauw, Linda},
+ title = {A Survey of QoS Architectures},
+ journal = {Multimedia Syst.},
+ issue_date = {May 1998},
+ volume = {6},
+ number = {3},
+ month = may,
+ year = {1998},
+ issn = {0942-4962},
+ pages = {138--151},
+ numpages = {14},
+ acmid = {277958},
+ publisher = {Springer-Verlag New York, Inc.},
+ address = {Secaucus, NJ, USA},
+} 
+
+@article{Gozdecki_2003,
+ author = {Gozdecki, J. and Jajszczyk, A. and Stankiewicz, R.},
+ title = {Quality of Service Terminology in IP Networks},
+ journal = {Comm. Mag.},
+ issue_date = {March 2003},
+ volume = {41},
+ number = {3},
+ month = mar,
+ year = {2003},
+ issn = {0163-6804},
+ pages = {153--159},
+ numpages = {7},
+ publisher = {IEEE Press},
+ address = {Piscataway, NJ, USA},
+}
+
+@book{McDysan_1999,
+ author = {McDysan, David},
+ title = {QoS and Traffic Management in IP and ATM Networks},
+ year = {2000},
+ isbn = {0-07-134959-6},
+ publisher = {McGraw-Hill, Inc.},
+ address = {New York, NY, USA},
+} 
+
+
+@inproceedings{bar_2013,
+  author = {Bari, M.F. and Chowdhury, S.R. and Ahmed, R. and Boutaba, R.},
+  booktitle = {Future Networks and Services (SDN4FNS), 2013 IEEE SDN for},
+  keywords = {imported},
+  month = Nov,
+  pages = {1-7},
+  title = {{PolicyCop}: An Autonomic {QoS} Policy Enforcement Framework for Software
+  Defined Networks},
+  year = 2013
+}
+
+@inproceedings{Ishimori_EWSDN13,
+ author = {Ishimori, Airton and Farias, Fernando and Cerqueira, Eduardo and Abel{\'e}m, Ant\^{o}nio},
+ title = {Control of Multiple Packet Schedulers for Improving QoS on OpenFlow/SDN Networking},
+ booktitle = {Proceedings of the 2013 Second European Workshop on Software Defined Networks},
+ series = {EWSDN '13},
+ year = {2013},
+ isbn = {978-1-4799-2433-2},
+ pages = {81--86},
+ numpages = {6},
+ publisher = {IEEE Computer Society},
+ address = {Washington, DC, USA},
+ keywords = {QoSFlow, Packet Schedulers, QoS, OpenFlow},
+}
+
+@inproceedings{Raumer_2014,
+  author={Daniel Raumer and Lukas Schwaighofer and Georg Carle},
+  pages={pages 961--968. },
+  title={MonSamp: an SDN Application for QoS Monitoring},
+  booktitle={Proceedings of the 2014 Federated Conference on Computer Science and Information Systems},
+  year={2014},
+  editor={M. Ganzha, L. Maciaszek, M. Paprzycki},
+  publisher={IEEE},
+  volume={2},
+  series={Annals of Computer Science and Information Systems}
+}
+
+@inproceedings{Kotsiantis_2007,
+ author = {Kotsiantis, S. B.},
+ title = {Supervised Machine Learning: A Review of Classification Techniques},
+ booktitle = {Proceedings of the 2007 Conference on Emerging Artificial Intelligence Applications in Computer Engineering: Real Word AI Systems with Applications in eHealth, HCI, Information Retrieval and Pervasive Technologies},
+ year = {2007},
+ isbn = {978-1-58603-780-2},
+ pages = {3--24},
+ numpages = {22},
+ publisher = {IOS Press},
+} 
+
+@article{Nguyen_2008,
+ author = {Nguyen, T. T.T. and Armitage, G.},
+ title = {A Survey of Techniques for Internet Traffic Classification Using Machine Learning},
+ journal = {Commun. Surveys Tuts.},
+ issue_date = {October 2008},
+ volume = {10},
+ number = {4},
+ month = oct,
+ year = {2008},
+ issn = {1553-877X},
+ pages = {56--76},
+ numpages = {21},
+ publisher = {IEEE Press},
+} 
+
+@inproceedings{Kim_CoNEXT08,
+ author = {Kim, Hyunchul and Claffy, KC and Fomenkov, Marina and Barman, Dhiman and Faloutsos, Michalis and Lee, KiYoung},
+ title = {Internet Traffic Classification Demystified: Myths, Caveats, and the Best Practices},
+ booktitle = {Proceedings of the 2008 ACM CoNEXT Conference},
+ series = {CoNEXT '08},
+ year = {2008},
+ location = {Madrid, Spain},
+ pages = {11:1--11:12},
+ articleno = {11},
+ numpages = {12},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+}
 
 

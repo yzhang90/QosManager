@@ -1,7 +1,7 @@
 \section{Related work}
 \label{sect:related}
 
-There are various QoS techniques \todo{citations see QoS survey} proposed in literatures. We classify them into two main
+There are various QoS techniques~\cite{IntServ, DiffServ, Sharma_EWSDN14, Egilmez_ASPIPA12, bar_2013, Ishimori_EWSDN13, Raumer_2014} proposed in literatures. We classify them into two main
 categories: \textbf{traditional QoS strategies} which were proposed before the introduction of SDN and
 \textbf{SDN enabled technologies}.
 
@@ -12,13 +12,13 @@ The idea is that every network element (e.g., router, switch) in the system has 
 architecture. DiffServ uses a 6-bit differentiated services code point (DSCP) in the 8-bit differentiated service field
 (DS field) in the IP header for packet classification purpose. DiffServ alleviates the scalability problem by providing
 QoS based on aggregated flows.  In Diffserv, customers or applications request a bandwidth broker to allocate a pre-determined
-amount of bandwidth. However, DiffServ is static (because of the predefined number of classes ) and lacks the ability to
+amount of bandwidth. However, DiffServ is static (because of the predefined number of classes) and lacks the ability to
 fine-tune the QoS of separate flows.
 
 In contrast to the described traditional methods, SDN enabled approaches provide more flexibility. Thanks to the abstraction
 provided by the decoupled controller, users can specify policies without the need to reconfigure low-level settings at each
 of the forwarding devices. Moreover, the set of policies and the number of traffic classes are unrestricted, which allows for
-fine-grained tuning based on the needs of the user. Our work falls into this category and focuses on providing a easy to deploy
+fine-grained tuning based on the needs of the user. Our work falls into this category and focuses on providing an easy to deploy
 and configure framework for per-flow, application-based QoS management in home networks.
 
 FlowQoS~\cite{Seddiki_HotSDN14} is a framework that utilizes SDN to reconfigure home routers according to a set of rate shaping

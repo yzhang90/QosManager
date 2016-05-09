@@ -13,14 +13,13 @@ an overview of the design and then describe the important components in detail.
 \end{figure}
 
 QosManager is implemented as an application on top of a SDN controller. As depicted in \reffig{architecture},
-the main components in QosManager are: \todo{redraw the architecture. Can refer to nmeta}
+the main components in QosManager are: 
 
 \begin{itemize}
   \item \emph{Web Portal}: The web portal provides an interface for users to set QoS parameters for
     different types of traffic. In addition, users could also view the real time statistical information
     about the traffic flows from the web portal.
-  \item \emph{Configuration Module}: The QoS policies are stored in a QoS configuration file in YAML
-    format. Configuration module mainly handles the configuration file and passes the QoS policies
+  \item \emph{Configuration Module}: The QoS policies are stored in a QoS configuration file in YAML~\cite{yaml} format. Configuration module mainly handles the configuration file and passes the QoS policies
     to the underlying three modules (traffic classification, forwarding and control, respectively).
   \item \emph{Traffic Classification Module}: The traffic classification module classifies the application
     type for each flow. It maintains a lookup table \emph{tc\_table} where the key \emph{id} is the hash value of a
@@ -132,12 +131,12 @@ priority at runtime to avoid this problem.
 \label{sect:queueAssignAlgo}
 
 The optimization of the QoS utility function is very similar to the Knapsack problem~\cite{knapsack} which can be effectively solved by dynamic
-programming. However, our problem differs form the canonical bounded knapsack problem in two ways. First, in our settings, an "object" (flow) has
-two "values" (full and partial score) and two corresponding "volumes" (recommended and minimal bandwidth). You can only choose one of them to put
-into the "knapsack" (shared link). Second, in order to avoid fluctuation, we want to keep a flow in the same queue as long as possible. That being
+programming. However, our problem differs form the canonical bounded knapsack problem in two ways. First, in our settings, an ``object" (flow) has
+two ``values" (full and partial score) and two corresponding ``volumes" (recommended and minimal bandwidth). You can only choose one of them to put
+into the ``knapsack" (shared link). Second, in order to avoid fluctuation, we want to keep a flow in the same queue as long as possible. That being
 said, when new objects come, and we need to reorganize the knapsack, we want to keep as many old objects in the knapsack as possible. What's more,
 since the knapsack is usually much larger than the smallest object, it is not memory efficient to use the dynamic programming. Instead, we use
-depth-first search (~\refalg{queueAssignAlgo}) to search for the optimal assignment.
+depth-first search (\refalg{queueAssignAlgo}) to search for the optimal assignment.
 
 \begin{algorithm}[htp]
   \SetAlgoLined
@@ -186,6 +185,6 @@ depth-first search (~\refalg{queueAssignAlgo}) to search for the optimal assignm
 The algorithm takes a list \emph{flowList} and the shared link capacity \emph{C} as input. The \emph{flowList} merges the tc\_table and the
 QoS policy configuration. We assume that all the flows in the \emph{flowList} are successfully classified by the traffic classification module.
 If a flow can not be recognized by the traffic classification module, it will be directly assigned to $q_0$. The algorithm first sort the
-\emph{flowList} by timestamp and then by priority. Suppose that the sorting algorithm is table, and we will always pick the flows in a
-"first come first serve" manner if there are multiple flows of the same application type. Then the algorithm invokes depth-first search procedure
+\emph{flowList} by timestamp and then by priority. Suppose that the sorting algorithm is table\todo{is table?}, and we will always pick the flows in a
+``first come first serve" manner if there are multiple flows of the same application type. Then the algorithm invokes depth-first search procedure
 to search for the optimal assignment.
