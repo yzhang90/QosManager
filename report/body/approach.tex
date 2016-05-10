@@ -61,7 +61,6 @@ An entry in a QoS policy configuration is defined as:
   recommended: <integer> Kbps
   priority: <integer>
 \end{lstlisting}
-
 For each type of application (e.g., video, VoIP, gaming, P2P, etc.), users needs to configure 3 parameters. The \emph{priority}
 parameter specifies the users' preference for the application. The higher the value is, the more important this type of
 application is. We noticed that applications such as video streaming usually have different levels of QoS. Thus, we introduce two
@@ -108,7 +107,6 @@ requirements satisfied, we assign a score to each flow. The score function for a
     \end{cases}$
 }
 \end{equation}
-
 The score function basically says that if a flow can not be guaranteed any level of QoS, it gets 0 point. To distinguish between different
 levels of QoS, we give full score to a flow if it is given recommended bandwidth and partial score to a flow if it is given minimum bandwidth.
 We directly use priority as score. Therefore, higher priority application flow will get higher score if it is satisfied. Based on the score
