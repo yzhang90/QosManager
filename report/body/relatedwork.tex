@@ -24,7 +24,7 @@ and configure framework for per-flow, application-based QoS management in home n
 FlowQoS~\cite{Seddiki_HotSDN14} is a framework that utilizes SDN to reconfigure home routers according to a set of rate shaping
 policies defined by the user. FlowQoS and our approach share the same idea of virtual slice the network bandwidth. However,
 our approach differs from FlowQoS in several ways. First, FlowQoS focuses on light weight traffic classification. To enforce
-the rate shaping, FlowQoS introduces two "virtual" switches inside the home router and each virtual link between two switches 
+the rate shaping, FlowQoS introduces two ``virtual" switches inside the home router and each virtual link between two switches 
 corresponds to a different application group. After traffic classification, flows of the same application type are forwarded to
 the same virtual link and the aggregated bandwidth of an application type is defined by the user. However, our approach focuses
 on the assignment of an appropriate rate to each flow to maximize the QoS requirements satisfied. The bandwidth allocation of each
